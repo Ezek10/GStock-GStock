@@ -1,0 +1,9 @@
+[run]
+branch = True
+source = src/main
+[report]
+fail_under = 95
+[html]
+directory = htmlcov
+[xml]
+output = coverage.xml
