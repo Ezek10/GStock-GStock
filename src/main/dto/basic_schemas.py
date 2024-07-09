@@ -20,7 +20,7 @@ class PageResponse(BaseModel, Generic[Y]):
     page_size: int
     total_pages: int
     total_record: int
-    content: Y
+    content: list[Y]
 
     def __eq__(self, __value: object) -> bool:
         if type(__value) is not PageResponse:

@@ -31,27 +31,36 @@ class AsyncDatabaseSession(AsyncSession):
         self.engine = create_async_engine(
             DB_CONFIG, future=True, echo=True, pool_size=10, max_overflow=20
         )
-        self.session = sessionmaker(
+        self.session_maker = sessionmaker(
             self.engine, expire_on_commit=False, class_=AsyncSession
-        )()
+        )
 
     async def create_all(self):
         async with self.engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
 
 
-db = AsyncDatabaseSession()
+connection = AsyncDatabaseSession()
 
 
-async def commit_rollback():
-    """commit funcion with rollback if raises in commit
+async def get_db_session():
+    session = connection.session_maker()
+    try:
+        yield session
+    finally:
+        await session.close()
+
+
+async def commit_rollback(session: AsyncSession):
+    """
+    Commit funcion with rollback if raises in commit
     raises AlreadyExist Exception if Integrity Error is thrown
     """
     try:
-        await db.commit()
+        await session.commit()
     except IntegrityError:
-        await db.rollback()
+        await session.rollback()
         raise AlreadyExistException()
     except Exception:
-        await db.rollback()
+        await session.rollback()
         raise

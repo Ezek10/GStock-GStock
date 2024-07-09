@@ -1,35 +1,33 @@
-from fastapi import Depends
+from fastapi import Depends, Request
 from fastapi.routing import APIRouter
-from src.main.authorization.admin import verify_key
+from sqlalchemy.orm import Session
 
-from main.controller.view.stock_view import Stocks
-from main.repository.stock_repository import StockRepository
-from main.page_schema import PageResponse, ResponseSchema
+from src.main.dto.stock_dto import ResponseStock, UpdateStock
+from src.main.dto.basic_schemas import PageResponse, ResponseSchema
+from src.main.repository.config import get_db_session
+from src.main.services.stock_service import StockService
 
-router = APIRouter(prefix="/stocks", tags=["stock"])
-
-
-@router.post("", response_model=ResponseSchema, dependencies=[Depends(verify_key)])
-async def create_stocks(create_from: Stocks):
-    result = await StockRepository.create(create_from)
-    return ResponseSchema(detail="Successfully created data !", result=result)
+router = APIRouter(prefix="/stock", tags=["stock"])
 
 
-@router.delete(
-    "/{stock_id}", response_model=ResponseSchema, dependencies=[Depends(verify_key)]
-)
-async def delete_stock(stock_id: int):
-    await StockRepository.delete(stock_id)
-    return ResponseSchema(detail="Successfully deleted data !")
+@router.put("", response_model=ResponseSchema)
+async def update_stocks(
+    request: Request,
+    update_from: UpdateStock,
+    session: Session = Depends(get_db_session),
+):
+    result = await StockService(session, request.state.customer).update_stock(update_from)
+    return ResponseSchema(detail="Successfully updated data !", result=result)
 
 
 @router.get(
     "",
-    response_model=ResponseSchema[PageResponse[Stocks]],
-    dependencies=[Depends(verify_key)],
+    response_model=ResponseSchema[PageResponse[ResponseStock]],
 )
-async def get_all_stocks():
-    result = await StockRepository.get_all()
-    return ResponseSchema(
-        detail="Successfully fetch stock data by id !", result=result
-    )
+async def get_all_stocks(
+    request: Request,
+    page: int = 1,
+    session: Session = Depends(get_db_session),
+):
+    result = await StockService(session, request.state.customer).get_all_stocks(page)
+    return ResponseSchema(detail="Successfully fetch stock data by id !", result=result)
