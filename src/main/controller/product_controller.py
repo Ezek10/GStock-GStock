@@ -1,6 +1,6 @@
 from fastapi import Depends, Request
 from fastapi.routing import APIRouter
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.main.dto.product_dto import Product, ProductStock, UpdateProduct
 from src.main.dto.basic_schemas import PageResponse, ResponseSchema
@@ -14,7 +14,7 @@ router = APIRouter(prefix="/product", tags=["product"])
 async def update_products(
     request: Request,
     update_from: UpdateProduct,
-    session: Session = Depends(get_db_session),
+    session: AsyncSession = Depends(get_db_session),
 ):
     result = await ProductService(session, request.state.customer).update_product(update_from)
     return ResponseSchema(detail="Successfully updated data !", result=result)
@@ -23,7 +23,7 @@ async def update_products(
 @router.get("", response_model=ResponseSchema[PageResponse[Product]])
 async def get_products(
     request: Request,
-    session: Session = Depends(get_db_session),
+    session: AsyncSession = Depends(get_db_session),
     page: int = 1
 ):
     result = await ProductService(session, request.state.customer).get_all_products(page)
@@ -31,19 +31,19 @@ async def get_products(
 
 
 @router.delete("", response_model=ResponseSchema)
-async def get_products(
+async def delete_products(
     request: Request,
     product_id: str,
-    session: Session = Depends(get_db_session),
+    session: AsyncSession = Depends(get_db_session),
 ):
     result = await ProductService(session, request.state.customer).delete_product(product_id)
     return ResponseSchema(detail="Successfully deleted data !", result=result)
 
 
 @router.get("/stock", response_model=ResponseSchema[PageResponse[ProductStock]])
-async def get_products(
+async def get_products_stocks(
     request: Request,
-    session: Session = Depends(get_db_session),
+    session: AsyncSession = Depends(get_db_session),
     page: int = 1
 ):
     result = await ProductService(session, request.state.customer).get_all_products_stocks(page)

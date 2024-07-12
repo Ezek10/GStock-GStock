@@ -1,6 +1,6 @@
 from fastapi import Depends, Request
 from fastapi.routing import APIRouter
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.main.dto.transaction_dto import (
     BuyTransaction,
@@ -22,7 +22,7 @@ router = APIRouter(prefix="/transaction", tags=["transaction"])
 async def create_buy_transaction(
     request: Request,
     create_from: BuyTransaction,
-    session: Session = Depends(get_db_session),
+    session: AsyncSession = Depends(get_db_session),
 ):
     result = await TransactionService(
         session, request.state.customer
@@ -34,7 +34,7 @@ async def create_buy_transaction(
 async def create_sell_transaction(
     request: Request,
     create_from: SellTransaction,
-    session: Session = Depends(get_db_session),
+    session: AsyncSession = Depends(get_db_session),
 ):
     result = await TransactionService(
         session, request.state.customer
@@ -46,7 +46,7 @@ async def create_sell_transaction(
 async def update_buy_transactions(
     request: Request,
     update_from: UpdateBuyTransaction,
-    session: Session = Depends(get_db_session),
+    session: AsyncSession = Depends(get_db_session),
 ):
     result = await TransactionService(
         session, request.state.customer
@@ -58,7 +58,7 @@ async def update_buy_transactions(
 async def update_sell_transactions(
     request: Request,
     update_from: UpdateSellTransaction,
-    session: Session = Depends(get_db_session),
+    session: AsyncSession = Depends(get_db_session),
 ):
     result = await TransactionService(
         session, request.state.customer
@@ -73,7 +73,7 @@ async def update_sell_transactions(
 async def get_all_transactions(
     request: Request,
     filters: FilterSchema = Depends(FilterSchema),
-    session: Session = Depends(get_db_session),
+    session: AsyncSession = Depends(get_db_session),
 ):
     result = await TransactionService(
         session, request.state.customer
@@ -89,7 +89,7 @@ async def get_all_transactions(
 async def get_cards(
     request: Request,
     filters: FilterSchema = Depends(FilterSchema),
-    session: Session = Depends(get_db_session),
+    session: AsyncSession = Depends(get_db_session),
 ):
     result = await TransactionService(
         session, request.state.customer

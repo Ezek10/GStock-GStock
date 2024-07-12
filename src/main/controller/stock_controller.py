@@ -1,6 +1,6 @@
 from fastapi import Depends, Request
 from fastapi.routing import APIRouter
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.main.dto.stock_dto import ResponseStock, UpdateStock
 from src.main.dto.basic_schemas import PageResponse, ResponseSchema
@@ -14,7 +14,7 @@ router = APIRouter(prefix="/stock", tags=["stock"])
 async def update_stocks(
     request: Request,
     update_from: UpdateStock,
-    session: Session = Depends(get_db_session),
+    session: AsyncSession = Depends(get_db_session),
 ):
     result = await StockService(session, request.state.customer).update_stock(update_from)
     return ResponseSchema(detail="Successfully updated data !", result=result)
@@ -27,7 +27,7 @@ async def update_stocks(
 async def get_all_stocks(
     request: Request,
     page: int = 1,
-    session: Session = Depends(get_db_session),
+    session: AsyncSession = Depends(get_db_session),
 ):
     result = await StockService(session, request.state.customer).get_all_stocks(page)
     return ResponseSchema(detail="Successfully fetch stock data by id !", result=result)

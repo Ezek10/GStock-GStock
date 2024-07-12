@@ -1,5 +1,5 @@
 import math
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.main.dto.stock_dto import StockStates
 from src.main.dto.transaction_dto import BuyTransaction, Cards, ContactVias, FilterSchema, ResponseTransaction, SellTransaction, TransactionTypes, UpdateBuyTransaction, UpdateSellTransaction
@@ -16,11 +16,10 @@ from src.main.repository.product_repository import ProductRepository
 from src.main.repository.stock_repository import StockRepository
 from src.main.repository.transaction_repository import TransactionRepository
 from src.main.repository.supplier_repository import SupplierRepository
-from src.main.services.stock_service import StockService
 
 
 class TransactionService:
-    def __init__(self, session: Session, customer: str) -> None:
+    def __init__(self, session: AsyncSession, customer: str) -> None:
         self.session = session
         self.customer = customer
         self.page_size = 100
@@ -241,8 +240,9 @@ class TransactionService:
 
         sell_channels = {name: 0 for name in ContactVias._member_names_}
         sell_transactions = list(filter(lambda x: x.type == TransactionTypes.SELL, transactions))
-        for k in sell_channels.keys():
-            sell_channels[k] = len(list(filter(lambda x: x.contact_via == k, sell_transactions)))/len(sell_transactions)*100
+        if len(sell_transactions):
+            for k in sell_channels.keys():
+                sell_channels[k] = len(list(filter(lambda x: x.contact_via == k, sell_transactions)))/len(sell_transactions)*100
 
         product_bought = 0
         for transaction in transactions:

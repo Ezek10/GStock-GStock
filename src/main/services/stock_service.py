@@ -1,5 +1,5 @@
 import math
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.main.dto.stock_dto import ResponseStock, UpdateStock
 from src.main.dto.basic_schemas import PageResponse
@@ -10,7 +10,7 @@ from src.main.repository.stock_repository import StockRepository
 
 
 class StockService:
-    def __init__(self, session: Session, customer: str) -> None:
+    def __init__(self, session: AsyncSession, customer: str) -> None:
         self.session = session
         self.customer = customer
         self.page_size = 100
