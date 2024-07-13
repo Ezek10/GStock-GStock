@@ -19,6 +19,7 @@ class StockDB(Base):
     state = Column(String, nullable=False)
     buy_price = Column(Float, nullable=False)
     sell_price = Column(Float)
+    observations = Column(String)
 
     product: Mapped["ProductDB"] = relationship(back_populates="stocks", lazy='selectin', single_parent=True)
     buy_transaction: Mapped["TransactionDB"] = relationship(back_populates="buy_stocks", lazy='selectin', foreign_keys=buy_transaction_id)

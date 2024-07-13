@@ -25,6 +25,7 @@ class ResponseStock(BaseModel):
     buy_price: Optional[float] = Field(ge=0, default=None)
     sell_price: Optional[float] = Field(ge=0, default=None)
     supplier: Optional[Supplier] = None
+    observations: Optional[str] = None
 
 
 class UpdateStock(BaseModel):
@@ -35,3 +36,4 @@ class UpdateStock(BaseModel):
     battery_percent: Optional[int] = None
     color: Optional[str] = None
     state: Optional[StockStates] = None
+    observations: Optional[str] = None
