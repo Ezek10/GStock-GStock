@@ -10,6 +10,7 @@ class TransactionDB(Base):
     id = Column(Integer, primary_key=True, nullable=False, autoincrement="auto")
     customer = Column(String, nullable=False)
     client_id = Column(Integer, ForeignKey("client.id"))
+    seller_id = Column(Integer, ForeignKey("seller.id"))
     supplier_id = Column(Integer, ForeignKey("supplier.id"))
     payment_method = Column(String)
     contact_via = Column(String)
@@ -19,6 +20,7 @@ class TransactionDB(Base):
 
     supplier: Mapped["SupplierDB"] = relationship(backref="transactions", lazy='selectin', single_parent=True)
     client: Mapped["ClientDB"] = relationship(backref="transactions", lazy='selectin', single_parent=True)
+    seller: Mapped["SellerDB"] = relationship(backref="transactions", lazy='selectin', single_parent=True)
     buy_stocks: Mapped[list["StockDB"]] = relationship(back_populates="buy_transaction", lazy="selectin", foreign_keys="StockDB.buy_transaction_id")
     sell_stocks: Mapped[list["StockDB"]] = relationship(back_populates="sell_transaction", lazy="selectin", foreign_keys="StockDB.sell_transaction_id")
 

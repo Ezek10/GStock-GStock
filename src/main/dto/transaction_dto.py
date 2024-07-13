@@ -4,6 +4,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from datetime import datetime
 
 from src.main.dto.client_dto import Client
+from src.main.dto.seller_dto import Seller
 from src.main.dto.stock_dto import ResponseStock
 from src.main.dto.supplier_dto import Supplier
 
@@ -59,6 +60,7 @@ class SellTransaction(BaseModel):
     model_config = ConfigDict(from_attributes=True, str_strip_whitespace=True, str_to_upper=True, use_enum_values=True)
     products: list[SellProduct]
     type: Literal[TransactionTypes.SELL] = TransactionTypes.SELL
+    seller: Seller
     client: Client
     payment_method: Optional[PaymentMethods] = None
     date: datetime
@@ -91,6 +93,7 @@ class ResponseTransaction(BaseModel):
     contact_via: Optional[ContactVias] = None
     products: list[ResponseStock]
     swap_products: Optional[list[ResponseStock]] = None
+    seller: Optional[Seller]
 
 
 class FilterSchema(BaseModel):
@@ -100,10 +103,12 @@ class FilterSchema(BaseModel):
     filter_by_buy_type: Optional[bool] = False
     filter_by_sell_type: Optional[bool] = False
     filter_by_product: Optional[int] = None
+    filter_by_specific_date: Optional[int] = Field(default=None, gt=0, lt=1000000000000000000)
     filter_by_start_date: Optional[int] = Field(default=None, gt=0, lt=1000000000000000000)
     filter_by_end_date: Optional[int] = Field(default=None, gt=0, lt=1000000000000000000)
     filter_by_supplier: Optional[int] = None
     filter_by_client: Optional[int] = None
+    filter_by_seller: Optional[int] = None
 
 
 class Cards(BaseModel):
@@ -113,3 +118,4 @@ class Cards(BaseModel):
     product_bought: float
     product_sold: float
     earns: int
+    sellers: dict[str, int]

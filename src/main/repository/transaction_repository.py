@@ -12,6 +12,10 @@ def add_filters(query: Select, filters: FilterSchema) -> Select:
         query = query.where(TransactionDB.client_id == filters.filter_by_client)
     if filters.filter_by_supplier:
         query = query.where(TransactionDB.supplier_id == filters.filter_by_supplier)
+    if filters.filter_by_seller:
+        query = query.where(TransactionDB.seller_id == filters.filter_by_seller)
+    if filters.filter_by_specific_date:
+        query = query.where(TransactionDB.date == filters.filter_by_specific_date)
     if filters.filter_by_end_date:
         query = query.where(TransactionDB.date <= filters.filter_by_end_date)
     if filters.filter_by_start_date:

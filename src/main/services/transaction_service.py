@@ -9,10 +9,12 @@ from src.main.repository.client_repository import ClientRepository
 from src.main.repository.config import commit_rollback
 from src.main.repository.model.client_model import ClientDB
 from src.main.repository.model.product_model import ProductDB
+from src.main.repository.model.seller_model import SellerDB
 from src.main.repository.model.stock_model import StockDB
 from src.main.repository.model.supplier_model import SupplierDB
 from src.main.repository.model.transaction_model import TransactionDB
 from src.main.repository.product_repository import ProductRepository
+from src.main.repository.seller_repository import SellerRepository
 from src.main.repository.stock_repository import StockRepository
 from src.main.repository.transaction_repository import TransactionRepository
 from src.main.repository.supplier_repository import SupplierRepository
@@ -70,6 +72,13 @@ class TransactionService:
             customer=self.customer
         )
         client = await ClientRepository.insert(self.session, client)
+        seller = SellerDB(
+            **create_from.seller.model_dump(
+                exclude_none=True, include=set(SellerDB.__table__.columns.keys())
+            ),
+            customer=self.customer
+        )
+        seller = await SellerRepository.insert(self.session, seller)
         if create_from.has_swap:
             supplier = await SupplierRepository.insert(self.session, SupplierDB(customer=self.customer, name="SWAP", color="#808080"))
         transaction = TransactionDB(
@@ -77,6 +86,7 @@ class TransactionService:
             date=create_from.date,
             payment_method=create_from.payment_method,
             client_id=client.id,
+            seller_id=seller.id,
             contact_via=create_from.contact_via,
             customer=self.customer,
             supplier_id=supplier.id if create_from.has_swap else None,
@@ -112,6 +122,9 @@ class TransactionService:
         return
 
     async def update_buy_transaction(self, update_from: UpdateBuyTransaction):
+        transaction_exist = await TransactionRepository.exist(self.session, update_from.id, self.customer)
+        if not transaction_exist:
+            raise ItemNotAvailableException()
         supplier = SupplierDB(
             **update_from.supplier.model_dump(
                 exclude_none=True, include=set(SupplierDB.__table__.columns.keys())
@@ -122,9 +135,6 @@ class TransactionService:
             self.session,
             supplier
         )
-        transaction_exist = await TransactionRepository.exist(self.session, update_from.id, self.customer)
-        if not transaction_exist:
-            raise ItemNotAvailableException()
         transaction_values_to_update = {
             **update_from.model_dump(exclude_none=True, include=set(TransactionDB.__table__.columns.keys())),
             "supplier_id": supplier.id,
@@ -147,6 +157,9 @@ class TransactionService:
         return
 
     async def update_sell_transaction(self, update_from: UpdateSellTransaction):
+        transaction_exist = await TransactionRepository.exist(self.session, update_from.id, self.customer)
+        if not transaction_exist:
+            raise ItemNotAvailableException()
         client = ClientDB(
             **update_from.client.model_dump(
                 exclude_none=True, include=set(ClientDB.__table__.columns.keys())
@@ -154,16 +167,21 @@ class TransactionService:
             customer=self.customer
         )
         client = await ClientRepository.insert(self.session, client)
-        transaction_exist = await TransactionRepository.exist(self.session, update_from.id, self.customer)
-        if not transaction_exist:
-            raise ItemNotAvailableException()
+        seller = SellerDB(
+            **update_from.seller.model_dump(
+                exclude_none=True, include=set(SellerDB.__table__.columns.keys())
+            ),
+            customer=self.customer
+        )
+        seller = await SellerRepository.insert(self.session, seller)
         if update_from.has_swap:
             supplier = await SupplierRepository.insert(self.session, SupplierDB(customer=self.customer, name="SWAP", color="#808080"))
         transaction_values_to_update = {
             **update_from.model_dump(exclude_none=True, include=set(TransactionDB.__table__.columns.keys())),
             "client_id": client.id,
             "customer": self.customer,
-            "supplier_id": supplier.id if update_from.has_swap else None
+            "supplier_id": supplier.id if update_from.has_swap else None,
+            "seller_id": seller.id
         }
         await TransactionRepository.update(self.session, transaction_values_to_update)
         await StockRepository.remove_sell_with_sell_id(self.session, update_from.id, self.customer)
@@ -194,9 +212,7 @@ class TransactionService:
         await commit_rollback(self.session)
         return
 
-    async def get_all_transactions(
-        self, filters: FilterSchema
-    ) -> PageResponse[ResponseTransaction]:
+    async def get_all_transactions(self, filters: FilterSchema) -> PageResponse[ResponseTransaction]:
         total_count = await TransactionRepository.get_all_count(self.session, self.customer, filters)
         transactions = await TransactionRepository.get_all(
             self.session, self.customer, (filters.page-1)*self.page_size, self.page_size, filters
@@ -215,6 +231,7 @@ class TransactionService:
                 ResponseTransaction(
                     id=transaction.id,
                     name=name,
+                    seller=transaction.seller,
                     total=transaction_price,
                     type=transaction.type,
                     payment_method=transaction.payment_method,
@@ -259,9 +276,15 @@ class TransactionService:
             for stock in transaction.sell_stocks:
                 earns += stock.sell_price
 
+        sellers = {transaction.seller.name: 0 for transaction in transactions if transaction.seller}
+        for transaction in transactions:
+            if transaction.seller:
+                sellers[transaction.seller.name] += len(transaction.sell_stocks)
+
         return Cards(
             channels=sell_channels,
             product_bought=product_bought,
             product_sold=product_sold,
-            earns=earns
+            earns=earns,
+            sellers=sellers
         )
