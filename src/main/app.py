@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 from src.main.authorization.admin import is_customer_verified
 from src.main.controller.stock_controller import router as stock_router
 from src.main.controller.client_controller import router as client_router
+from src.main.controller.seller_controller import router as seller_router
 from src.main.controller.product_controller import router as product_router
 from src.main.controller.transaction_controller import router as transaction_router
 from src.main.controller.supplier_controller import router as supplier_router
@@ -34,6 +35,7 @@ app.include_router(product_router)
 app.include_router(client_router)
 app.include_router(supplier_router)
 app.include_router(transaction_router)
+app.include_router(seller_router)
 
 
 exclude_paths = ["/docs", "/openapi.json"]

@@ -39,11 +39,11 @@ class TransactionService:
             supplier
         )
         transaction = TransactionDB(
-            type=create_from.type,
-            date=create_from.date,
-            payment_method=create_from.payment_method,
+            **create_from.model_dump(
+                exclude_none=True, include=set(TransactionDB.__table__.columns.keys())
+            ),
+            customer=self.customer,
             supplier_id=supplier.id,
-            customer=self.customer
         )
         transaction = await TransactionRepository.create(self.session, transaction)
 
@@ -51,13 +51,14 @@ class TransactionService:
             product = ProductDB(customer=self.customer, name=product_to_create.product_name)
             product = await ProductRepository.insert(self.session, product)
             stock_db = StockDB(
-                customer=self.customer, 
-                product_id=product.id, 
-                buy_transaction_id=transaction.id, 
-                buy_price=product_to_create.buy_price,
-                state=StockStates.AVAILABLE.value
+                **product_to_create.model_dump(
+                    exclude_none=True, include=set(StockDB.__table__.columns.keys())
+                ),
+                customer=self.customer,
+                product_id = product.id,
+                buy_transaction_id = transaction.id
             )
-            await StockRepository.create_many(self.session, stock_db, product_to_create.amount)
+            await StockRepository.create(self.session, stock_db)
 
         await commit_rollback(self.session)
         return
@@ -82,15 +83,13 @@ class TransactionService:
         if create_from.has_swap:
             supplier = await SupplierRepository.insert(self.session, SupplierDB(customer=self.customer, name="SWAP", color="#808080"))
         transaction = TransactionDB(
-            type=create_from.type,
-            date=create_from.date,
-            payment_method=create_from.payment_method,
+            **create_from.model_dump(
+                exclude_none=True, include=set(TransactionDB.__table__.columns.keys())
+            ),
             client_id=client.id,
             seller_id=seller.id,
-            contact_via=create_from.contact_via,
             customer=self.customer,
             supplier_id=supplier.id if create_from.has_swap else None,
-            has_swap=create_from.has_swap
         )
         transaction = await TransactionRepository.create(self.session, transaction)
         products = [
@@ -110,11 +109,12 @@ class TransactionService:
                 product = ProductDB(customer=self.customer, name=swap_item.product_name)
                 product = await ProductRepository.insert(self.session, product)
                 swap_item_to_create = StockDB(
-                    customer=self.customer, 
-                    product_id=product.id, 
-                    buy_transaction_id=transaction.id, 
-                    buy_price=swap_item.buy_price,
-                    state=StockStates.AVAILABLE.value
+                    **swap_item.model_dump(
+                        exclude_none=True, include=set(StockDB.__table__.columns.keys())
+                    ),
+                    customer=self.customer,
+                    product_id=product.id,
+                    buy_transaction_id=transaction.id
                 )
                 await StockRepository.create(self.session, swap_item_to_create)
 
@@ -146,13 +146,14 @@ class TransactionService:
             product = await ProductRepository.insert(self.session, product)
             await StockRepository.delete_with_buy_id(self.session, update_from.id, self.customer)
             stock_db = StockDB(
-                customer=self.customer, 
-                product_id=product.id, 
-                buy_transaction_id=update_from.id, 
-                buy_price=product_to_update.buy_price,
-                state=StockStates.AVAILABLE.value
+                **product_to_update.model_dump(
+                    exclude_none=True, include=set(StockDB.__table__.columns.keys())
+                ),
+                customer=self.customer,
+                product_id = product.id,
+                buy_transaction_id = update_from.id
             )
-            await StockRepository.create_many(self.session, stock_db, product_to_update.amount)
+            await StockRepository.create(self.session, stock_db)
         await commit_rollback(self.session)
         return
 
@@ -202,11 +203,12 @@ class TransactionService:
                 product = ProductDB(customer=self.customer, name=swap_item.product_name)
                 product = await ProductRepository.insert(self.session, product)
                 swap_item_to_create = StockDB(
-                    customer=self.customer, 
-                    product_id=product.id, 
-                    buy_transaction_id=update_from.id, 
-                    buy_price=swap_item.buy_price,
-                    state=StockStates.AVAILABLE.value
+                    **swap_item.model_dump(
+                        exclude_none=True, include=set(StockDB.__table__.columns.keys())
+                    ),
+                    customer=self.customer,
+                    product_id = product.id,
+                    buy_transaction_id = update_from.id
                 )
                 await StockRepository.create(self.session, swap_item_to_create)
         await commit_rollback(self.session)

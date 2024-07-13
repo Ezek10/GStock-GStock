@@ -6,7 +6,7 @@ from src.main.dto.product_dto import Product
 from src.main.dto.supplier_dto import Supplier
 
 
-class StockStates(Enum):
+class StockStates(str, Enum):
     AVAILABLE = "AVAILABLE"
     RESERVED = "RESERVED"
     DEFECTS = "DEFECTS"

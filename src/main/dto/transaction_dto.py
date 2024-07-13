@@ -5,7 +5,7 @@ from datetime import datetime
 
 from src.main.dto.client_dto import Client
 from src.main.dto.seller_dto import Seller
-from src.main.dto.stock_dto import ResponseStock
+from src.main.dto.stock_dto import ResponseStock, StockStates
 from src.main.dto.supplier_dto import Supplier
 
 
@@ -33,9 +33,13 @@ class ContactVias(str, Enum):
 
 class BuyProducts(BaseModel):
     model_config = ConfigDict(from_attributes=True, str_strip_whitespace=True, str_to_upper=True, use_enum_values=True)
-    amount: int = Field(default=1, gt=0)
     product_name: str
-    buy_price: float
+    serial_id: Optional[str] = None
+    color: Optional[str] = None
+    battery_percent: Optional[int] = None
+    state: Optional[StockStates] = StockStates.AVAILABLE
+    buy_price: Optional[float] = Field(ge=0, default=None)
+    observations: Optional[str] = None
 
 
 class BuyTransaction(BaseModel):
