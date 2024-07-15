@@ -1,7 +1,7 @@
 version: '3.8'
 services:
 
-  edmachina:
+  stock:
     build: .
     depends_on:
       - postgresql
@@ -14,7 +14,6 @@ services:
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - DB_NAME=${DB_NAME}
-      - ADMIN_AUTH=${ADMIN_AUTH}
 
   postgresql:
     image: postgres:14.1-alpine
