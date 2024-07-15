@@ -1,4 +1,4 @@
-.PHONY: help run  black flake pylint test
+.PHONY: help run  black flake pylint test docker-up
 
 
 help:
@@ -7,6 +7,7 @@ help:
 	@echo "flake: lint the code"
 	@echo "pylint: lint the code"
 	@echo "test: run the tests"
+	@echo "docker-up: run docker"
 
 run:
 	uvicorn src.main.app:app --reload --env-file .env
@@ -25,3 +26,6 @@ test:
 
 install:
 	pip install -r requirements.txt
+
+docker-up:
+	docker-compose up -d
