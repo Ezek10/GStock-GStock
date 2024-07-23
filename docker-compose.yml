@@ -1,9 +1,9 @@
 version: '3.8'
 services:
 
-  stock:
+  gstock:
     image: ezemarcel/gstock-api:1.0
-    container_name: stock_api
+    container_name: gstock_api
     depends_on:
       - postgresql
     ports:
@@ -15,18 +15,41 @@ services:
       - DB_HOST=postgresql
       - DB_PORT=5432
       - DB_NAME=${DB_NAME}
+      - GSTOCK_PREFIX=${GSTOCK_PREFIX}
+      - USER_PATH=users
     healthcheck:
-      test:  ["CMD", "curl", "-f", "http://localhost:80/status", "--header", "customer:admin"]
-      interval: 30s
-      timeout: 60s
+      test:  ["CMD", "curl", "-f", "http://localhost:80/health_check"]
+      interval: 60s
+      timeout: 10s
       retries: 5
       start_period: 10s
-    
+
+  users:
+    image: ezemarcel/users-api:1.0
+    container_name: users_api
+    depends_on:
+      - postgresql
+    ports:
+      - 8280:80
+    environment:
+      - DB_ENGINE=${DB_ENGINE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=postgresql
+      - DB_PORT=5432
+      - DB_NAME=${DB_NAME}
+      - USER_PREFIX=${USER_PREFIX}
+    healthcheck:
+      test:  ["CMD", "curl", "-f", "http://localhost:80/health_check"]
+      interval: 60s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
 
   postgresql:
     image: postgres:14.1-alpine
     restart: always
-    container_name: stock_db
+    container_name: gstock_db
     environment:
       - POSTGRES_USER=${DB_USERNAME}
       - POSTGRES_PASSWORD=${DB_PASSWORD}

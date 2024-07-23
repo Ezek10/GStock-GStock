@@ -13,3 +13,4 @@ asyncio==3.4.3
 trio==0.25.1
 pytest-asyncio==0.23.7
 pytest-cov==5.0.0
+requests==2.32.3

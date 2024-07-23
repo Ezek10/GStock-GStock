@@ -1,8 +1,9 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Request, Response
+import os
+from fastapi import Depends, FastAPI, Request, Response
 from fastapi.responses import JSONResponse
 
-from src.main.authorization.admin import is_customer_verified
+from src.main.authorization.admin import get_user_with_token
 from src.main.controller.stock_controller import router as stock_router
 from src.main.controller.client_controller import router as client_router
 from src.main.controller.seller_controller import router as seller_router
@@ -28,8 +29,9 @@ async def lifespan(app: FastAPI):
     yield
     await shutdown()
 
+APP_PREFIX = os.environ["GSTOCK_PREFIX"]
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(lifespan=lifespan, openapi_prefix=APP_PREFIX)
 app.include_router(stock_router)
 app.include_router(product_router)
 app.include_router(client_router)
@@ -37,18 +39,28 @@ app.include_router(supplier_router)
 app.include_router(transaction_router)
 app.include_router(seller_router)
 
-
-exclude_paths = ["/docs", "/openapi.json"]
-
+exclude_paths = [
+    "/docs",
+    "/openapi.json",
+    "/health_check"
+]
 
 @app.middleware("http")
 async def oauth2_authorization(request: Request, call_next):
-    request.state.customer = request.headers.get("customer")
-    if request.url.path in exclude_paths or is_customer_verified(
-        request.state.customer
-    ):
+    #CLEAR PATH
+    path = request.url.path.replace(APP_PREFIX, "")
+    if path in exclude_paths:
         return await call_next(request)
-    return JSONResponse(content="Unauthorized", status_code=403)
+    # Enable Auth
+    token = request.headers.get("Authorization", "").replace("Bearer ", "")
+    #SET USER JSON ON REQUEST
+    user = get_user_with_token(token, path)
+    if user:
+        request.state.user=user
+        request.state.customer=user["customer"]
+        return await call_next(request)
+    else:
+        return JSONResponse(content="Unauthorized", status_code=403)
 
 
 @app.exception_handler(Exception)
@@ -57,6 +69,6 @@ def exception_handler(request: Request, exception: Exception) -> JSONResponse:
     return ProcessException(request, exception)
 
 
-@app.get("/status")
+@app.get("/health_check")
 async def status() -> Response:
     return Response(content="Status: OK", status_code=200)
