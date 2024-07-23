@@ -2,7 +2,7 @@ version: '3.8'
 services:
 
   gstock:
-    image: ezemarcel/gstock-api:1.0
+    image: ezemarcel/gstock-gstock-api:1.0
     container_name: gstock_api
     depends_on:
       - postgresql
@@ -14,7 +14,7 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_HOST=postgresql
       - DB_PORT=5432
-      - DB_NAME=${DB_NAME}
+      - DB_GSTOCK=${DB_GSTOCK}
       - GSTOCK_PREFIX=${GSTOCK_PREFIX}
       - USER_PATH=users
     healthcheck:
@@ -25,7 +25,7 @@ services:
       start_period: 10s
 
   users:
-    image: ezemarcel/users-api:1.0
+    image: ezemarcel/gstock-users-api:1.0
     container_name: users_api
     depends_on:
       - postgresql
@@ -37,7 +37,7 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_HOST=postgresql
       - DB_PORT=5432
-      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
       - USER_PREFIX=${USER_PREFIX}
     healthcheck:
       test:  ["CMD", "curl", "-f", "http://localhost:80/health_check"]
@@ -50,6 +50,8 @@ services:
     image: postgres:14.1-alpine
     restart: always
     container_name: gstock_db
+    ports:
+      - 5430:5432
     environment:
       - POSTGRES_USER=${DB_USERNAME}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
