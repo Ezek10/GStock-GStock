@@ -16,7 +16,7 @@ services:
       - DB_PORT=5432
       - DB_GSTOCK=${DB_GSTOCK}
       - GSTOCK_PREFIX=${GSTOCK_PREFIX}
-      - USER_PATH=users
+      - USER_PATH=http://host.docker.internal:8280
     healthcheck:
       test:  ["CMD", "curl", "-f", "http://localhost:80/health_check"]
       interval: 60s
@@ -55,7 +55,7 @@ services:
     environment:
       - POSTGRES_USER=${DB_USERNAME}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_DB=${DB_GSTOCK}
     volumes:
       - postgresql-volume:/var/lib/postgresql/data
     healthcheck:
