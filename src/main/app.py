@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 import os
 from fastapi import Depends, FastAPI, Request, Response
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 from src.main.authorization.admin import get_user_with_token
 from src.main.controller.stock_controller import router as stock_router
@@ -38,6 +39,14 @@ app.include_router(client_router)
 app.include_router(supplier_router)
 app.include_router(transaction_router)
 app.include_router(seller_router)
+
+app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 exclude_paths = [
     "/docs",
