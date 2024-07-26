@@ -40,13 +40,21 @@ app.include_router(supplier_router)
 app.include_router(transaction_router)
 app.include_router(seller_router)
 
-app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+@app.options('/{rest_of_path:path}')
+async def preflight_handler(request: Request, rest_of_path: str) -> Response:
+    response = Response()
+    response.headers['Access-Control-Allow-Origin'] = "*"
+    response.headers['Access-Control-Allow-Methods'] = 'DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT'
+    response.headers['Access-Control-Allow-Headers'] = 'Authorization, Content-Type, use_cache, cache-control'
+    return response
+
+@app.middleware("http")
+async def add_CORS_header(request: Request, call_next):
+    response = await call_next(request)
+    response.headers['Access-Control-Allow-Origin'] =  "*"
+    response.headers['Access-Control-Allow-Methods'] = "DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT"
+    response.headers['Access-Control-Allow-Headers'] = 'Authorization, Content-Type, use_cache, cache-control'
+    return response
 
 exclude_paths = [
     "/docs",
@@ -58,7 +66,7 @@ exclude_paths = [
 async def oauth2_authorization(request: Request, call_next):
     #CLEAR PATH
     path = request.url.path.replace(APP_PREFIX, "")
-    if path in exclude_paths:
+    if path in exclude_paths or request.method == "OPTIONS":
         return await call_next(request)
     # Enable Auth
     token = request.headers.get("Authorization", "").replace("Bearer ", "")
