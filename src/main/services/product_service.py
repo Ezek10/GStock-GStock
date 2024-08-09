@@ -55,6 +55,12 @@ class ProductService:
             ProductStock.model_validate(product, from_attributes=True)
             for product in result
         ]
+        with_low_stock = lambda stock_amount: stock_amount < 3
+        is_data_missing = lambda stock: stock.color is None or stock.serial_id is None
+        for product in response:
+            product.warning_stock = with_low_stock(len(product.stocks))
+            for stock in product.stocks:
+                stock.missing_data = is_data_missing(stock)
         await commit_rollback(self.session)
         return PageResponse(
             page_number=page, 

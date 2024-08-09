@@ -28,7 +28,9 @@ class ResponseStock(BaseModel):
     buy_price: Optional[float] = None
     supplier: Optional[Supplier] = None
     observations: Optional[str] = None
+    missing_data: bool = False
 
 
 class ProductStock(Product):
     stocks: Optional[list[ResponseStock]] = None
+    warning_stock: Optional[list[bool]] = None

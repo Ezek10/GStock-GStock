@@ -1,6 +1,22 @@
 version: '3.8'
 services:
 
+  front:
+    image: ezemarcel/gstock-front-app:1.0
+    container_name: front_app
+    depends_on:
+      - gstock
+    ports:
+      - 8282:80
+    environment:
+      - USER_PATH=http://host.docker.internal:8280
+    healthcheck:
+      test:  ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 60s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+
   gstock:
     image: ezemarcel/gstock-gstock-api:1.0
     container_name: gstock_api
