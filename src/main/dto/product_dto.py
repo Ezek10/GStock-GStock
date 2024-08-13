@@ -33,4 +33,4 @@ class ResponseStock(BaseModel):
 
 class ProductStock(Product):
     stocks: Optional[list[ResponseStock]] = None
-    warning_stock: Optional[list[bool]] = None
+    warning_stock: Optional[bool] = None

@@ -14,7 +14,12 @@ class ProductDB(Base):
     created_at = Column(BigInteger, default=time.time)
     modified_at = Column(BigInteger, default=time.time, onupdate=time.time)
 
-    stocks: Mapped[list["StockDB"]] = relationship(back_populates="product", lazy='selectin', single_parent=True)
+    stocks: Mapped[list["StockDB"]] = relationship(
+        back_populates="product", 
+        lazy='selectin', 
+        single_parent=True, 
+        primaryjoin="and_(StockDB.product_id == ProductDB.id, StockDB.sell_transaction_id == None)"
+    )
 
     def __repr__(self):
         return f"ProductDB({self.id})"
