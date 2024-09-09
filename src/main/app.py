@@ -71,13 +71,10 @@ async def oauth2_authorization(request: Request, call_next):
     # Enable Auth
     token = request.headers.get("Authorization", "").replace("Bearer ", "")
     #SET USER JSON ON REQUEST
-    user = get_user_with_token(token, path)
-    if user:
-        request.state.user=user
-        request.state.customer=user["customer"]
-        return await call_next(request)
-    else:
-        return JSONResponse(content="Unauthorized", status_code=403)
+    user = get_user_with_token(token)
+    request.state.user=user
+    request.state.customer=user["id"]
+    return await call_next(request)
 
 
 @app.exception_handler(Exception)
