@@ -72,7 +72,7 @@ async def oauth2_authorization(request: Request, call_next):
     #SET USER JSON ON REQUEST
     user = get_user_with_token(token)
     request.state.user=user
-    request.state.customer=user["id"]
+    request.state.customer=user["client_id"]
     return await call_next(request)
 
 
