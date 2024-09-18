@@ -24,7 +24,7 @@ class TransactionService:
     def __init__(self, session: AsyncSession, customer: str) -> None:
         self.session = session
         self.customer = customer
-        self.page_size = 100
+        self.page_size = 10000
 
     async def create_buy_transaction(self, create_from: BuyTransaction):
 
@@ -243,6 +243,7 @@ class TransactionService:
                     swap_products=transaction.buy_stocks if transaction.has_swap else []
                 )
             )
+        transactions_response = sorted(transactions_response, key=lambda x: x.date, reverse=True)
         await commit_rollback(self.session)
         return PageResponse(
             page_number=filters.page,

@@ -68,7 +68,7 @@ class TransactionRepository:
     ) -> list[TransactionDB]:
         query = select(TransactionDB).distinct(TransactionDB.id).where(TransactionDB.customer == customer)
         query = add_filters(query, filters)
-        query = query.offset(offset).limit(limit).order_by(TransactionDB.id).order_by(TransactionDB.created_at.desc())
+        query = query.offset(offset).limit(limit)
         result = (await session.scalars(query)).fetchall()
         return result
 
