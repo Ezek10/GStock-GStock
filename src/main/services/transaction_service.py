@@ -283,6 +283,8 @@ class TransactionService:
         for transaction in transactions:
             if transaction.seller:
                 sellers[transaction.seller.name] += len(transaction.sell_stocks)
+        sellers = sorted(sellers.items(), key=lambda x: x[1], reverse=True)
+        sellers = sellers[:6]
 
         return Cards(
             channels=sell_channels,
