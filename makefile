@@ -29,3 +29,7 @@ install:
 
 docker-up:
 	docker-compose up -d
+
+docker-push:
+	docker build -t ezemarcel/gstock-users-api:1.1 .
+	docker push ezemarcel/gstock-users-api:1.1

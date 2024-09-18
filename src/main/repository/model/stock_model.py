@@ -9,7 +9,7 @@ class StockDB(Base):
     __tablename__ = "stock"
 
     id = Column(Integer, primary_key=True, nullable=False, autoincrement="auto")
-    customer = Column(String, nullable=False)
+    customer = Column(Integer, nullable=False)
     product_id = Column(Integer, ForeignKey("product.id"), nullable=False)
     buy_transaction_id = Column(Integer, ForeignKey("transaction.id"), nullable=False)
     sell_transaction_id = Column(Integer, ForeignKey("transaction.id"))

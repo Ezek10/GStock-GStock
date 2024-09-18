@@ -8,7 +8,7 @@ class ClientDB(Base):
     __tablename__ = "client"
 
     id = Column(Integer, primary_key=True, nullable=False, autoincrement="auto")
-    customer = Column(String, nullable=False)
+    customer = Column(Integer, nullable=False)
     name = Column(String)
     email = Column(String)
     cellphone = Column(String)

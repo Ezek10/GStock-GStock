@@ -1,8 +1,7 @@
 from contextlib import asynccontextmanager
 import os
-from fastapi import Depends, FastAPI, Request, Response
+from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
-from fastapi.middleware.cors import CORSMiddleware
 
 from src.main.authorization.admin import get_user_with_token
 from src.main.controller.stock_controller import router as stock_router

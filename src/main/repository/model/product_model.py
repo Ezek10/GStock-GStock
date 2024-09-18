@@ -8,7 +8,7 @@ class ProductDB(Base):
     __tablename__ = "product"
 
     id = Column(Integer, primary_key=True, nullable=False, autoincrement="auto")
-    customer = Column(String, nullable=False)
+    customer = Column(Integer, nullable=False)
     name = Column(String, nullable=False)
     list_price = Column(Float)
     created_at = Column(BigInteger, default=time.time)

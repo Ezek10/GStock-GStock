@@ -8,7 +8,7 @@ class TransactionDB(Base):
     __tablename__ = "transaction"
 
     id = Column(Integer, primary_key=True, nullable=False, autoincrement="auto")
-    customer = Column(String, nullable=False)
+    customer = Column(Integer, nullable=False)
     client_id = Column(Integer, ForeignKey("client.id"))
     seller_id = Column(Integer, ForeignKey("seller.id"))
     supplier_id = Column(Integer, ForeignKey("supplier.id"))

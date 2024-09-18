@@ -7,7 +7,7 @@ class SupplierDB(Base):
     __tablename__ = "supplier"
 
     id = Column(Integer, primary_key=True, nullable=False, autoincrement="auto")
-    customer = Column(String, nullable=False)
+    customer = Column(Integer, nullable=False)
     name = Column(String, nullable=False)
     color = Column(String, nullable=False)
     created_at = Column(BigInteger, default=time.time)

@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from src.main.dto.supplier_dto import Supplier
 
@@ -8,7 +8,7 @@ class Product(BaseModel):
     model_config = ConfigDict(from_attributes=True, str_strip_whitespace=True, str_to_upper=True, use_enum_values=True)
     
     id: Optional[int] = None
-    name: str
+    name: str = Field(min_length=1)
     list_price: Optional[float] = None
 
 
