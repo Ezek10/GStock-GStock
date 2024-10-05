@@ -15,24 +15,30 @@ def ProcessException(request: Request, exception: Exception) -> JSONResponse:
 
     except UnauthorizedException:
         print("UnauthorizedException")
-        return JSONResponse(status_code=401, content="Unauthorized")
+        response = JSONResponse(status_code=401, content="Unauthorized")
 
     except AlreadyExistException:
         print("AlreadyExistException")
-        return JSONResponse(status_code=400, content="Object Already Exist")
+        response = JSONResponse(status_code=400, content="Object Already Exist")
 
     except ItemNotAvailableException:
         print("ItemNotAvailableException")
-        return JSONResponse(status_code=400, content="Item Not Available")
+        response = JSONResponse(status_code=400, content="Item Not Available")
 
     except NotFoundException:
         print("NotFoundException")
-        return JSONResponse(status_code=404, content="NotFound")
+        response = JSONResponse(status_code=404, content="NotFound")
 
     except ApplicationException:
         print("ERROR")
-        return JSONResponse(status_code=500, content="Application Exception")
+        response = JSONResponse(status_code=500, content="Application Exception")
 
     except Exception:
         print("ERROR")
-        return JSONResponse(status_code=500, content="Internal Server Error")
+        response = JSONResponse(status_code=500, content="Internal Server Error")
+
+    response.headers['Access-Control-Allow-Origin'] =  "*"
+    response.headers['Access-Control-Allow-Methods'] = "DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT"
+    response.headers['Access-Control-Allow-Headers'] = 'Authorization, Content-Type, use_cache, cache-control'
+
+    return response
