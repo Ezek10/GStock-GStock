@@ -98,6 +98,8 @@ class ResponseTransaction(BaseModel):
     products: list[ResponseStock]
     swap_products: Optional[list[ResponseStock]] = None
     seller: Optional[Seller]
+    client: Optional[Client]
+    supplier: Optional[Supplier]
 
 
 class FilterSchema(BaseModel):

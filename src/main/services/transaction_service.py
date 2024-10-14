@@ -240,7 +240,9 @@ class TransactionService:
                     date=transaction.date,
                     contact_via=transaction.contact_via,
                     products=transaction_products,
-                    swap_products=transaction.buy_stocks if transaction.has_swap else []
+                    swap_products=transaction.buy_stocks if transaction.has_swap else [],
+                    supplier=transaction.supplier if transaction.supplier else None,
+                    client=transaction.client if transaction.client else None
                 )
             )
         transactions_response = sorted(transactions_response, key=lambda x: x.date, reverse=True)
