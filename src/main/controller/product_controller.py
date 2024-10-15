@@ -33,7 +33,7 @@ async def get_products(
 @router.delete("", response_model=ResponseSchema)
 async def delete_products(
     request: Request,
-    product_id: str,
+    product_id: int,
     session: AsyncSession = Depends(get_db_session),
 ):
     result = await ProductService(session, request.state.customer).delete_product(product_id)
