@@ -66,7 +66,7 @@ async def update_sell_transactions(
     return ResponseSchema(detail="Successfully updated data !", result=result)
 
 
-@router.delete("/", response_model=ResponseSchema)
+@router.delete("", response_model=ResponseSchema)
 async def delete_transactions(
     request: Request,
     transaction_id: int,
