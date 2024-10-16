@@ -276,10 +276,8 @@ class TransactionService:
 
         earns = 0
         for transaction in transactions:
-            for stock in transaction.buy_stocks:
-                earns -= stock.buy_price
             for stock in transaction.sell_stocks:
-                earns += stock.sell_price
+                earns += stock.sell_price - stock.buy_price
 
         sellers = {transaction.seller.name: 0 for transaction in transactions if transaction.seller}
         for transaction in transactions:
