@@ -66,6 +66,18 @@ async def update_sell_transactions(
     return ResponseSchema(detail="Successfully updated data !", result=result)
 
 
+@router.delete("/", response_model=ResponseSchema)
+async def delete_transactions(
+    request: Request,
+    transaction_id: int,
+    session: AsyncSession = Depends(get_db_session),
+):
+    result = await TransactionService(
+        session, request.state.customer
+    ).delete_transaction(transaction_id)
+    return ResponseSchema(detail="Successfully deleted transaction !", result=result)
+
+
 @router.get(
     "",
     response_model=ResponseSchema[PageResponse[ResponseTransaction]],
@@ -81,6 +93,7 @@ async def get_all_transactions(
     return ResponseSchema(
         detail="Successfully fetch all transaction!", result=result
     )
+
 
 @router.get(
     "/cards",

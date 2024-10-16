@@ -296,3 +296,12 @@ class TransactionService:
             earns=earns,
             sellers=sellers
         )
+
+    async def delete_transaction(self, transaction_id: int):
+        transaction_exist = await TransactionRepository.exist(self.session, transaction_id, self.customer)
+        if not transaction_exist:
+            raise ItemNotAvailableException()
+        await StockRepository.remove_sell_with_sell_id(transaction_id)
+        await StockRepository.delete_with_buy_id(transaction_id)
+        await commit_rollback(self.session)
+        return
