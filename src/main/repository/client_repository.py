@@ -14,6 +14,7 @@ class ClientRepository:
         client_db = (await session.execute(query)).scalar_one_or_none()
         if not client_db:
             # insert in table
+            client.id = None
             session.add(client)
             await session.flush()
         else:

@@ -14,6 +14,7 @@ class ProductRepository:
         )
         product_db = (await session.execute(query)).scalar_one_or_none()
         if not product_db:
+            product.id = None
             session.add(product)
             await session.flush()
         return product_db or product

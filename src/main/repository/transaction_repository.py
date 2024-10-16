@@ -35,6 +35,7 @@ class TransactionRepository:
     @staticmethod
     async def create(session: AsyncSession, create_from: TransactionDB) -> TransactionDB:
         """create transaction data"""
+        create_from.id = None
         session.add(create_from)
         await session.flush()
         return create_from

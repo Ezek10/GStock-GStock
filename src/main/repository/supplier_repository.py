@@ -14,6 +14,7 @@ class SupplierRepository:
         )
         supplier_db = (await session.execute(query)).scalar_one_or_none()
         if not supplier_db:
+            supplier.id = None
             session.add(supplier)
             await session.flush()
         return supplier_db or supplier

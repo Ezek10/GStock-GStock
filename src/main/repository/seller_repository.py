@@ -14,6 +14,7 @@ class SellerRepository:
         seller_db = (await session.execute(query)).scalar_one_or_none()
         if not seller_db:
             # insert in table
+            seller.id = None
             session.add(seller)
             await session.flush()
         else:

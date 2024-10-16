@@ -30,6 +30,7 @@ class StockRepository:
         session: AsyncSession, create_from: StockDB
     ):
         """create stock data"""
+        create_from.id = None
         session.add(create_from)
         await session.flush()
 
