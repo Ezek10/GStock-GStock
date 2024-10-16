@@ -303,5 +303,6 @@ class TransactionService:
             raise ItemNotAvailableException()
         await StockRepository.remove_sell_with_sell_id(self.session, transaction_id, self.customer)
         await StockRepository.delete_with_buy_id(self.session, transaction_id, self.customer)
+        await TransactionRepository.delete(self.session, transaction_id, self.customer)
         await commit_rollback(self.session)
         return
