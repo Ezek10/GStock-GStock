@@ -21,9 +21,9 @@ def add_filters(query: Select, filters: FilterSchema) -> Select:
     if filters.filter_by_start_date:
         query = query.where(TransactionDB.date >= filters.filter_by_start_date)
     if filters.filter_by_buy_type:
-        query = query.where(TransactionDB.type == TransactionTypes.BUY)
+        query = query.where(TransactionDB.type != TransactionTypes.BUY)
     if filters.filter_by_sell_type:
-        query = query.where(TransactionDB.type == TransactionTypes.SELL)
+        query = query.where(TransactionDB.type != TransactionTypes.SELL)
     if filters.filter_by_product:
         query = query.join(StockDB, TransactionDB.id.in_([StockDB.buy_transaction_id, StockDB.sell_transaction_id]))
         query = query.where(StockDB.product_id == filters.filter_by_product)
