@@ -17,13 +17,15 @@ class ProductRepository:
             product.id = None
             session.add(product)
             await session.flush()
+        elif product_db.is_active is False:
+            product_db.is_active = True
         return product_db or product
 
     @staticmethod
     async def get_all(
         session: AsyncSession, customer: str, offset: int, limit: int
     ) -> list[ProductDB]:
-        query = select(ProductDB).where(ProductDB.customer == customer)
+        query = select(ProductDB).where(ProductDB.customer == customer, ProductDB.is_active == True)
         query = query.offset(offset).limit(limit)
         result = (await session.scalars(query)).fetchall()
         return list(result)
@@ -32,7 +34,7 @@ class ProductRepository:
     async def get(
         session: AsyncSession, product_id: int, customer: str
     ) -> ProductDB:
-        query = select(ProductDB).where(ProductDB.customer == customer, ProductDB.id == product_id)
+        query = select(ProductDB).where(ProductDB.customer == customer, ProductDB.id == product_id, ProductDB.is_active == True)
         result = (await session.scalars(query)).one_or_none()
         return result
 
@@ -40,13 +42,14 @@ class ProductRepository:
     async def delete(
         session: AsyncSession, product_id: int, customer: str
     ):
-        query = delete(ProductDB).where(ProductDB.customer == customer, ProductDB.id == product_id)
+        # Products are not deleted they get disabled
+        query = update(ProductDB).where(ProductDB.customer == customer, ProductDB.id == product_id).values({"is_active":False})
         await session.execute(query)
         return
 
     @staticmethod
     async def get_all_count(session: AsyncSession, customer: str) -> int:
-        query = select(ProductDB).where(ProductDB.customer == customer)
+        query = select(ProductDB).where(ProductDB.customer == customer, ProductDB.is_active == True)
         count_query = select(func.count(1)).select_from(query)
         total_record = await session.scalar(count_query)
         return total_record

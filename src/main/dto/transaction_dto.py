@@ -38,13 +38,14 @@ class BuyProducts(BaseModel):
     color: Optional[str] = None
     battery_percent: Optional[int] = None
     state: Optional[StockStates] = StockStates.AVAILABLE
-    buy_price: Optional[float] = Field(ge=0, default=None)
+    buy_price: float = Field(gt=0)
     observations: Optional[str] = None
 
 
 class BuyTransaction(BaseModel):
     model_config = ConfigDict(from_attributes=True, str_strip_whitespace=True, str_to_upper=True, use_enum_values=True)
     products: list[BuyProducts]
+    partial_payment: Optional[int] = Field(gt=0)
     type: Literal[TransactionTypes.BUY] = TransactionTypes.BUY
     date: datetime
     payment_method: Optional[PaymentMethods] = None
@@ -57,13 +58,14 @@ class BuyTransaction(BaseModel):
 
 class SellProduct(BaseModel):
     id: int
-    sell_price: float
+    sell_price: float = Field(gt=0)
 
 
 class SellTransaction(BaseModel):
     model_config = ConfigDict(from_attributes=True, str_strip_whitespace=True, str_to_upper=True, use_enum_values=True)
     products: list[SellProduct]
     type: Literal[TransactionTypes.SELL] = TransactionTypes.SELL
+    partial_payment: Optional[int] = Field(gt=0)
     seller: Seller
     client: Client
     payment_method: Optional[PaymentMethods] = None
@@ -93,6 +95,7 @@ class ResponseTransaction(BaseModel):
     total: float
     name: str
     payment_method: Optional[PaymentMethods] = None
+    partial_payment: Optional[int] = None
     date: datetime
     contact_via: Optional[ContactVias] = None
     products: list[ResponseStock]
@@ -115,6 +118,7 @@ class FilterSchema(BaseModel):
     filter_by_supplier: Optional[int] = None
     filter_by_client: Optional[int] = None
     filter_by_seller: Optional[int] = None
+    filter_by_partial_payment: Optional[bool] = False
 
 
 class Cards(BaseModel):

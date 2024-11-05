@@ -1,5 +1,5 @@
 import time
-from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import BigInteger, Boolean, Column, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship, Mapped
 from src.main.repository.config import Base
 
@@ -13,6 +13,7 @@ class TransactionDB(Base):
     seller_id = Column(Integer, ForeignKey("seller.id"))
     supplier_id = Column(Integer, ForeignKey("supplier.id"))
     payment_method = Column(String)
+    partial_payment = Column(Float)
     contact_via = Column(String)
     type = Column(String, nullable=False)
     date = Column(BigInteger, nullable=False)

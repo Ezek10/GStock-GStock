@@ -16,9 +16,6 @@ class ProductService:
         self.page_size = 100
 
     async def delete_product(self, product_id):
-        product = await ProductRepository.get(self.session, product_id, self.customer)
-        if len(product.stocks) != 0:
-            raise ItemNotAvailableException()
         await ProductRepository.delete(self.session, product_id, self.customer)
         await commit_rollback(self.session)
         return
@@ -27,7 +24,7 @@ class ProductService:
         product_exist = await ProductRepository.exist(self.session, update_from.id, self.customer)
         if not product_exist:
             raise ItemNotAvailableException()
-        values_to_update = {**update_from.model_dump(exclude_none=True, include=set(ProductDB.__table__.columns.keys())), "customer": self.customer}
+        values_to_update = {**update_from.model_dump(include=set(ProductDB.__table__.columns.keys())), "customer": self.customer}
         await ProductRepository.update(self.session, values_to_update)
         await commit_rollback(self.session)
         return

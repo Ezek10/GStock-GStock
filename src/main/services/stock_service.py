@@ -19,7 +19,7 @@ class StockService:
         stock_exist = await StockRepository.exist(self.session, update_from.id, self.customer)
         if not stock_exist:
             raise ItemNotAvailableException()
-        values_to_update = {**update_from.model_dump(exclude_none=True, include=set(StockDB.__table__.columns.keys())), "customer": self.customer}
+        values_to_update = {**update_from.model_dump(include=set(StockDB.__table__.columns.keys())), "customer": self.customer}
         await StockRepository.update(self.session, values_to_update)
         await commit_rollback(self.session)
         return

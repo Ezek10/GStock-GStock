@@ -1,5 +1,5 @@
 import time
-from sqlalchemy import BigInteger, Column, Float, Integer, String
+from sqlalchemy import BigInteger, Boolean, Column, Float, Integer, String
 from sqlalchemy.orm import Mapped, relationship
 from src.main.repository.config import Base
 
@@ -11,6 +11,7 @@ class ProductDB(Base):
     customer = Column(Integer, nullable=False)
     name = Column(String, nullable=False)
     list_price = Column(Float)
+    is_active = Column(Boolean)
     created_at = Column(BigInteger, default=time.time)
     modified_at = Column(BigInteger, default=time.time, onupdate=time.time)
 

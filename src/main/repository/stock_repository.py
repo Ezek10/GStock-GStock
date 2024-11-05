@@ -51,7 +51,11 @@ class StockRepository:
 
     @staticmethod
     async def remove_sell_with_sell_id(session: AsyncSession, sell_id: int, customer: str):
-        query = update(StockDB).where(StockDB.customer == customer, StockDB.sell_transaction_id == sell_id).values({"sell_transaction_id": None, "sell_price": None})
+        query = (
+            update(StockDB)
+            .where(StockDB.customer == customer, StockDB.sell_transaction_id == sell_id)
+            .values({"sell_transaction_id": None, "sell_price": None})
+        )
         await session.execute(query)
         return
 

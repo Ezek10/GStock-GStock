@@ -1,8 +1,17 @@
 import math
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.main.dto.stock_dto import StockStates
-from src.main.dto.transaction_dto import BuyTransaction, Cards, ContactVias, FilterSchema, ResponseTransaction, SellTransaction, TransactionTypes, UpdateBuyTransaction, UpdateSellTransaction
+from src.main.dto.transaction_dto import (
+    BuyTransaction,
+    Cards,
+    ContactVias,
+    FilterSchema,
+    ResponseTransaction,
+    SellTransaction,
+    TransactionTypes,
+    UpdateBuyTransaction,
+    UpdateSellTransaction
+)
 from src.main.dto.basic_schemas import PageResponse
 from src.main.exceptions.already_sold_exception import ItemNotAvailableException
 from src.main.repository.client_repository import ClientRepository
@@ -29,9 +38,7 @@ class TransactionService:
     async def create_buy_transaction(self, create_from: BuyTransaction):
 
         supplier = SupplierDB(
-            **create_from.supplier.model_dump(
-                exclude_none=True, include=set(SupplierDB.__table__.columns.keys())
-            ),
+            **create_from.supplier.model_dump(include=set(SupplierDB.__table__.columns.keys())),
             customer=self.customer
         )
         supplier = await SupplierRepository.insert(
@@ -39,9 +46,7 @@ class TransactionService:
             supplier
         )
         transaction = TransactionDB(
-            **create_from.model_dump(
-                exclude_none=True, include=set(TransactionDB.__table__.columns.keys())
-            ),
+            **create_from.model_dump(include=set(TransactionDB.__table__.columns.keys())),
             customer=self.customer,
             supplier_id=supplier.id,
         )
@@ -51,9 +56,7 @@ class TransactionService:
             product = ProductDB(customer=self.customer, name=product_to_create.product_name)
             product = await ProductRepository.insert(self.session, product)
             stock_db = StockDB(
-                **product_to_create.model_dump(
-                    exclude_none=True, include=set(StockDB.__table__.columns.keys())
-                ),
+                **product_to_create.model_dump(include=set(StockDB.__table__.columns.keys())),
                 customer=self.customer,
                 product_id = product.id,
                 buy_transaction_id = transaction.id
@@ -67,25 +70,19 @@ class TransactionService:
         # Contact via lo debe enviar nico desde front sabiendo la lista de clientes que ya existe
         # Preguntar a nico si el deberia enviarme 
         client = ClientDB(
-            **create_from.client.model_dump(
-                exclude_none=True, include=set(ClientDB.__table__.columns.keys())
-            ),
+            **create_from.client.model_dump(include=set(ClientDB.__table__.columns.keys())),
             customer=self.customer
         )
         client = await ClientRepository.insert(self.session, client)
         seller = SellerDB(
-            **create_from.seller.model_dump(
-                exclude_none=True, include=set(SellerDB.__table__.columns.keys())
-            ),
+            **create_from.seller.model_dump(include=set(SellerDB.__table__.columns.keys())),
             customer=self.customer
         )
         seller = await SellerRepository.insert(self.session, seller)
         if create_from.has_swap:
             supplier = await SupplierRepository.insert(self.session, SupplierDB(customer=self.customer, name="SWAP", color="#808080"))
         transaction = TransactionDB(
-            **create_from.model_dump(
-                exclude_none=True, include=set(TransactionDB.__table__.columns.keys())
-            ),
+            **create_from.model_dump(include=set(TransactionDB.__table__.columns.keys())),
             client_id=client.id,
             seller_id=seller.id,
             customer=self.customer,
@@ -109,9 +106,7 @@ class TransactionService:
                 product = ProductDB(customer=self.customer, name=swap_item.product_name)
                 product = await ProductRepository.insert(self.session, product)
                 swap_item_to_create = StockDB(
-                    **swap_item.model_dump(
-                        exclude_none=True, include=set(StockDB.__table__.columns.keys())
-                    ),
+                    **swap_item.model_dump(include=set(StockDB.__table__.columns.keys())),
                     customer=self.customer,
                     product_id=product.id,
                     buy_transaction_id=transaction.id
@@ -126,9 +121,7 @@ class TransactionService:
         if not transaction_exist:
             raise ItemNotAvailableException()
         supplier = SupplierDB(
-            **update_from.supplier.model_dump(
-                exclude_none=True, include=set(SupplierDB.__table__.columns.keys())
-            ),
+            **update_from.supplier.model_dump(include=set(SupplierDB.__table__.columns.keys())),
             customer=self.customer
         )
         supplier = await SupplierRepository.insert(
@@ -136,7 +129,7 @@ class TransactionService:
             supplier
         )
         transaction_values_to_update = {
-            **update_from.model_dump(exclude_none=True, include=set(TransactionDB.__table__.columns.keys())),
+            **update_from.model_dump(include=set(TransactionDB.__table__.columns.keys())),
             "supplier_id": supplier.id,
             "customer":self.customer
         }
@@ -146,9 +139,7 @@ class TransactionService:
             product = await ProductRepository.insert(self.session, product)
             await StockRepository.delete_with_buy_id(self.session, update_from.id, self.customer)
             stock_db = StockDB(
-                **product_to_update.model_dump(
-                    exclude_none=True, include=set(StockDB.__table__.columns.keys())
-                ),
+                **product_to_update.model_dump(include=set(StockDB.__table__.columns.keys())),
                 customer=self.customer,
                 product_id = product.id,
                 buy_transaction_id = update_from.id
@@ -162,23 +153,19 @@ class TransactionService:
         if not transaction_exist:
             raise ItemNotAvailableException()
         client = ClientDB(
-            **update_from.client.model_dump(
-                exclude_none=True, include=set(ClientDB.__table__.columns.keys())
-            ),
+            **update_from.client.model_dump(include=set(ClientDB.__table__.columns.keys())),
             customer=self.customer
         )
         client = await ClientRepository.insert(self.session, client)
         seller = SellerDB(
-            **update_from.seller.model_dump(
-                exclude_none=True, include=set(SellerDB.__table__.columns.keys())
-            ),
+            **update_from.seller.model_dump(include=set(SellerDB.__table__.columns.keys())),
             customer=self.customer
         )
         seller = await SellerRepository.insert(self.session, seller)
         if update_from.has_swap:
             supplier = await SupplierRepository.insert(self.session, SupplierDB(customer=self.customer, name="SWAP", color="#808080"))
         transaction_values_to_update = {
-            **update_from.model_dump(exclude_none=True, include=set(TransactionDB.__table__.columns.keys())),
+            **update_from.model_dump(include=set(TransactionDB.__table__.columns.keys())),
             "client_id": client.id,
             "customer": self.customer,
             "supplier_id": supplier.id if update_from.has_swap else None,
@@ -203,9 +190,7 @@ class TransactionService:
                 product = ProductDB(customer=self.customer, name=swap_item.product_name)
                 product = await ProductRepository.insert(self.session, product)
                 swap_item_to_create = StockDB(
-                    **swap_item.model_dump(
-                        exclude_none=True, include=set(StockDB.__table__.columns.keys())
-                    ),
+                    **swap_item.model_dump(include=set(StockDB.__table__.columns.keys())),
                     customer=self.customer,
                     product_id = product.id,
                     buy_transaction_id = update_from.id
@@ -296,9 +281,6 @@ class TransactionService:
         )
 
     async def delete_transaction(self, transaction_id: int):
-        transaction_exist = await TransactionRepository.exist(self.session, transaction_id, self.customer)
-        if not transaction_exist:
-            raise ItemNotAvailableException()
         await StockRepository.remove_sell_with_sell_id(self.session, transaction_id, self.customer)
         await StockRepository.delete_with_buy_id(self.session, transaction_id, self.customer)
         await TransactionRepository.delete(self.session, transaction_id, self.customer)
