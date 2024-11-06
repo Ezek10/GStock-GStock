@@ -53,7 +53,7 @@ class TransactionService:
         transaction = await TransactionRepository.create(self.session, transaction)
 
         for product_to_create in create_from.products:
-            product = ProductDB(customer=self.customer, name=product_to_create.product_name)
+            product = ProductDB(customer=self.customer, name=product_to_create.product_name, is_active=True)
             product = await ProductRepository.insert(self.session, product)
             stock_db = StockDB(
                 **product_to_create.model_dump(include=set(StockDB.__table__.columns.keys())),
