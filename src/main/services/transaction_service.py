@@ -222,6 +222,7 @@ class TransactionService:
                     total=transaction_price,
                     type=transaction.type,
                     payment_method=transaction.payment_method,
+                    partial_payment=transaction.partial_payment,
                     date=transaction.date,
                     contact_via=transaction.contact_via,
                     products=transaction_products,
