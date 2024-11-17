@@ -39,6 +39,7 @@ class BuyProducts(BaseModel):
     battery_percent: Optional[int] = None
     state: Optional[StockStates] = StockStates.AVAILABLE
     buy_price: float = Field(gt=0)
+    sell_price: Optional[float] = Field(gt=0, default=None)
     observations: Optional[str] = None
 
 

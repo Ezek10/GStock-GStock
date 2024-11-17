@@ -54,7 +54,7 @@ class StockRepository:
         query = (
             update(StockDB)
             .where(StockDB.customer == customer, StockDB.sell_transaction_id == sell_id)
-            .values({"sell_transaction_id": None, "sell_price": None})
+            .values({"sell_transaction_id": None})
         )
         await session.execute(query)
         return

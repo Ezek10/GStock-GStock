@@ -34,6 +34,7 @@ class UpdateStock(BaseModel):
     id: int
     serial_id: Optional[str] = None
     battery_percent: Optional[int] = None
+    sell_price: Optional[float] = Field(ge=0, default=None)
     color: Optional[str] = None
     state: Optional[StockStates] = None
     observations: Optional[str] = None

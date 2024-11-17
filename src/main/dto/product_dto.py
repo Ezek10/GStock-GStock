@@ -27,6 +27,7 @@ class ResponseStock(BaseModel):
     state: str
     buy_price: Optional[float] = None
     supplier: Optional[Supplier] = None
+    sell_price: Optional[float] = None
     observations: Optional[str] = None
     missing_data: bool = False
 

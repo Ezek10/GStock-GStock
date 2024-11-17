@@ -53,7 +53,7 @@ class ProductService:
             for product in result
         ]
         with_low_stock = lambda stock_amount: stock_amount < 3
-        is_data_missing = lambda stock: bool(stock.color) or bool(stock.serial_id)
+        is_data_missing = lambda stock: bool(stock.serial_id)
         for product in response:
             product.warning_stock = with_low_stock(len(product.stocks))
             for stock in product.stocks:
