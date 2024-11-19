@@ -26,6 +26,7 @@ class ProductRepository:
         session: AsyncSession, customer: str, offset: int, limit: int
     ) -> list[ProductDB]:
         query = select(ProductDB).where(ProductDB.customer == customer, ProductDB.is_active == True)
+        query.order_by(ProductDB.name)
         query = query.offset(offset).limit(limit)
         result = (await session.scalars(query)).fetchall()
         return list(result)
