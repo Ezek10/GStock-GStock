@@ -8,6 +8,6 @@ class Client(BaseModel):
     id: Optional[int] = None
     name: str = Field(min_length=1)
     email: Optional[str] = None
-    cellphone: Optional[int] = None
+    cellphone: Optional[str] = None
     address: Optional[str] = None
     document: Optional[str] = None
