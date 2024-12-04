@@ -134,10 +134,10 @@ class TransactionService:
             "customer":self.customer
         }
         await TransactionRepository.update(self.session, transaction_values_to_update)
+        await StockRepository.delete_with_buy_id(self.session, update_from.id, self.customer)
         for product_to_update in update_from.products:
             product = ProductDB(customer=self.customer, name=product_to_update.product_name)
             product = await ProductRepository.insert(self.session, product)
-            await StockRepository.delete_with_buy_id(self.session, update_from.id, self.customer)
             stock_db = StockDB(
                 **product_to_update.model_dump(include=set(StockDB.__table__.columns.keys())),
                 customer=self.customer,
