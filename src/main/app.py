@@ -1,8 +1,15 @@
+import gzip
 import os
 from contextlib import asynccontextmanager
 
+from apscheduler.schedulers.background import BackgroundScheduler  # runs tasks in the background
+from apscheduler.triggers.cron import CronTrigger  # allows us to specify a recurring time for execution
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
+from sh import pg_dump
 
 from src.main.authorization.admin import get_user_with_token
 from src.main.controller.client_controller import router as client_router
@@ -13,6 +20,48 @@ from src.main.controller.supplier_controller import router as supplier_router
 from src.main.controller.transaction_controller import router as transaction_router
 from src.main.exceptions.handler import process_exception
 from src.main.repository.config import connection
+
+
+# The task to run
+def backup_database():
+    os.environ["PGPASSWORD"] = os.environ["DB_PASSWORD"]
+    with gzip.open("backup.gz", "wb") as f:
+        pg_dump(
+            "-h",
+            os.environ["DB_HOST"],
+            "-p",
+            os.environ["DB_PORT"],
+            "-U",
+            os.environ["DB_USERNAME"],
+            os.environ["DB_GSTOCK"],
+            "--clean",
+            "--column-inserts",
+            "--if-exists",
+            _out=f,
+        )
+
+    # Credenciales del servicio de cuenta
+    credentials = service_account.Credentials.from_service_account_file("secret.json")
+
+    # Servicio de Google Drive
+    drive_service = build("drive", "v3", credentials=credentials)
+
+    # Subir un archivo
+    file_metadata = {
+        "name": "backup.sql",
+        "parents": ["folder_id"],  # ID de la carpeta de respaldo
+    }
+    media = MediaFileUpload("backup.sql", mimetype="application/sql")
+    drive_service.files().create(body=file_metadata, media_body=media, fields="id").execute()
+
+    # ... additional task code goes here ...
+
+
+# Set up the scheduler
+scheduler = BackgroundScheduler()
+trigger = CronTrigger(hour=14, minute=36)
+scheduler.add_job(backup_database, trigger)
+scheduler.start()
 
 
 async def start_up() -> None:

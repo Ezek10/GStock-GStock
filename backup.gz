@@ -1,0 +1,416 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 14.1
+-- Dumped by pg_dump version 14.12 (Homebrew)
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+ALTER TABLE IF EXISTS public.transaction ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.supplier ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.stock ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.seller ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.product ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.client ALTER COLUMN id DROP DEFAULT;
+DROP SEQUENCE IF EXISTS public.transaction_id_seq;
+DROP TABLE IF EXISTS public.transaction;
+DROP SEQUENCE IF EXISTS public.supplier_id_seq;
+DROP TABLE IF EXISTS public.supplier;
+DROP SEQUENCE IF EXISTS public.stock_id_seq;
+DROP TABLE IF EXISTS public.stock;
+DROP SEQUENCE IF EXISTS public.seller_id_seq;
+DROP TABLE IF EXISTS public.seller;
+DROP SEQUENCE IF EXISTS public.product_id_seq;
+DROP TABLE IF EXISTS public.product;
+DROP SEQUENCE IF EXISTS public.client_id_seq;
+DROP TABLE IF EXISTS public.client;
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: client; Type: TABLE; Schema: public; Owner: user
+--
+
+CREATE TABLE public.client (
+    id integer NOT NULL,
+    customer integer NOT NULL,
+    name character varying,
+    email character varying,
+    cellphone character varying,
+    address character varying,
+    document character varying,
+    created_at bigint,
+    modified_at bigint
+);
+
+
+ALTER TABLE public.client OWNER TO "user";
+
+--
+-- Name: client_id_seq; Type: SEQUENCE; Schema: public; Owner: user
+--
+
+CREATE SEQUENCE public.client_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.client_id_seq OWNER TO "user";
+
+--
+-- Name: client_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: user
+--
+
+ALTER SEQUENCE public.client_id_seq OWNED BY public.client.id;
+
+
+--
+-- Name: product; Type: TABLE; Schema: public; Owner: user
+--
+
+CREATE TABLE public.product (
+    id integer NOT NULL,
+    customer integer NOT NULL,
+    name character varying NOT NULL,
+    list_price double precision,
+    is_active boolean,
+    created_at bigint,
+    modified_at bigint
+);
+
+
+ALTER TABLE public.product OWNER TO "user";
+
+--
+-- Name: product_id_seq; Type: SEQUENCE; Schema: public; Owner: user
+--
+
+CREATE SEQUENCE public.product_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.product_id_seq OWNER TO "user";
+
+--
+-- Name: product_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: user
+--
+
+ALTER SEQUENCE public.product_id_seq OWNED BY public.product.id;
+
+
+--
+-- Name: seller; Type: TABLE; Schema: public; Owner: user
+--
+
+CREATE TABLE public.seller (
+    id integer NOT NULL,
+    customer integer NOT NULL,
+    name character varying,
+    email character varying,
+    cellphone character varying,
+    address character varying,
+    document character varying,
+    created_at bigint,
+    modified_at bigint
+);
+
+
+ALTER TABLE public.seller OWNER TO "user";
+
+--
+-- Name: seller_id_seq; Type: SEQUENCE; Schema: public; Owner: user
+--
+
+CREATE SEQUENCE public.seller_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.seller_id_seq OWNER TO "user";
+
+--
+-- Name: seller_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: user
+--
+
+ALTER SEQUENCE public.seller_id_seq OWNED BY public.seller.id;
+
+
+--
+-- Name: stock; Type: TABLE; Schema: public; Owner: user
+--
+
+CREATE TABLE public.stock (
+    id integer NOT NULL,
+    customer integer NOT NULL,
+    product_id integer NOT NULL,
+    buy_transaction_id integer NOT NULL,
+    sell_transaction_id integer,
+    serial_id character varying,
+    battery_percent integer,
+    color character varying,
+    state character varying NOT NULL,
+    buy_price double precision NOT NULL,
+    sell_price double precision,
+    observations character varying,
+    created_at bigint,
+    modified_at bigint
+);
+
+
+ALTER TABLE public.stock OWNER TO "user";
+
+--
+-- Name: stock_id_seq; Type: SEQUENCE; Schema: public; Owner: user
+--
+
+CREATE SEQUENCE public.stock_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.stock_id_seq OWNER TO "user";
+
+--
+-- Name: stock_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: user
+--
+
+ALTER SEQUENCE public.stock_id_seq OWNED BY public.stock.id;
+
+
+--
+-- Name: supplier; Type: TABLE; Schema: public; Owner: user
+--
+
+CREATE TABLE public.supplier (
+    id integer NOT NULL,
+    customer integer NOT NULL,
+    name character varying NOT NULL,
+    color character varying NOT NULL,
+    created_at bigint,
+    modified_at bigint
+);
+
+
+ALTER TABLE public.supplier OWNER TO "user";
+
+--
+-- Name: supplier_id_seq; Type: SEQUENCE; Schema: public; Owner: user
+--
+
+CREATE SEQUENCE public.supplier_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.supplier_id_seq OWNER TO "user";
+
+--
+-- Name: supplier_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: user
+--
+
+ALTER SEQUENCE public.supplier_id_seq OWNED BY public.supplier.id;
+
+
+--
+-- Name: transaction; Type: TABLE; Schema: public; Owner: user
+--
+
+CREATE TABLE public.transaction (
+    id integer NOT NULL,
+    customer integer NOT NULL,
+    client_id integer,
+    seller_id integer,
+    supplier_id integer,
+    payment_method character varying,
+    partial_payment double precision,
+    contact_via character varying,
+    type character varying NOT NULL,
+    date bigint NOT NULL,
+    has_swap boolean,
+    created_at bigint,
+    modified_at bigint
+);
+
+
+ALTER TABLE public.transaction OWNER TO "user";
+
+--
+-- Name: transaction_id_seq; Type: SEQUENCE; Schema: public; Owner: user
+--
+
+CREATE SEQUENCE public.transaction_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.transaction_id_seq OWNER TO "user";
+
+--
+-- Name: transaction_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: user
+--
+
+ALTER SEQUENCE public.transaction_id_seq OWNED BY public.transaction.id;
+
+
+--
+-- Name: client id; Type: DEFAULT; Schema: public; Owner: user
+--
+
+ALTER TABLE ONLY public.client ALTER COLUMN id SET DEFAULT nextval('public.client_id_seq'::regclass);
+
+
+--
+-- Name: product id; Type: DEFAULT; Schema: public; Owner: user
+--
+
+ALTER TABLE ONLY public.product ALTER COLUMN id SET DEFAULT nextval('public.product_id_seq'::regclass);
+
+
+--
+-- Name: seller id; Type: DEFAULT; Schema: public; Owner: user
+--
+
+ALTER TABLE ONLY public.seller ALTER COLUMN id SET DEFAULT nextval('public.seller_id_seq'::regclass);
+
+
+--
+-- Name: stock id; Type: DEFAULT; Schema: public; Owner: user
+--
+
+ALTER TABLE ONLY public.stock ALTER COLUMN id SET DEFAULT nextval('public.stock_id_seq'::regclass);
+
+
+--
+-- Name: supplier id; Type: DEFAULT; Schema: public; Owner: user
+--
+
+ALTER TABLE ONLY public.supplier ALTER COLUMN id SET DEFAULT nextval('public.supplier_id_seq'::regclass);
+
+
+--
+-- Name: transaction id; Type: DEFAULT; Schema: public; Owner: user
+--
+
+ALTER TABLE ONLY public.transaction ALTER COLUMN id SET DEFAULT nextval('public.transaction_id_seq'::regclass);
+
+
+--
+-- Data for Name: client; Type: TABLE DATA; Schema: public; Owner: user
+--
+
+INSERT INTO public.client (id, customer, name, email, cellphone, address, document, created_at, modified_at) VALUES (1, 1, '1', '1', '1', '1', '1', 1, 1);
+
+
+--
+-- Data for Name: product; Type: TABLE DATA; Schema: public; Owner: user
+--
+
+
+
+--
+-- Data for Name: seller; Type: TABLE DATA; Schema: public; Owner: user
+--
+
+
+
+--
+-- Data for Name: stock; Type: TABLE DATA; Schema: public; Owner: user
+--
+
+
+
+--
+-- Data for Name: supplier; Type: TABLE DATA; Schema: public; Owner: user
+--
+
+
+
+--
+-- Data for Name: transaction; Type: TABLE DATA; Schema: public; Owner: user
+--
+
+
+
+--
+-- Name: client_id_seq; Type: SEQUENCE SET; Schema: public; Owner: user
+--
+
+SELECT pg_catalog.setval('public.client_id_seq', 1, false);
+
+
+--
+-- Name: product_id_seq; Type: SEQUENCE SET; Schema: public; Owner: user
+--
+
+SELECT pg_catalog.setval('public.product_id_seq', 1, false);
+
+
+--
+-- Name: seller_id_seq; Type: SEQUENCE SET; Schema: public; Owner: user
+--
+
+SELECT pg_catalog.setval('public.seller_id_seq', 1, false);
+
+
+--
+-- Name: stock_id_seq; Type: SEQUENCE SET; Schema: public; Owner: user
+--
+
+SELECT pg_catalog.setval('public.stock_id_seq', 1, false);
+
+
+--
+-- Name: supplier_id_seq; Type: SEQUENCE SET; Schema: public; Owner: user
+--
+
+SELECT pg_catalog.setval('public.supplier_id_seq', 1, false);
+
+
+--
+-- Name: transaction_id_seq; Type: SEQUENCE SET; Schema: public; Owner: user
+--
+
+SELECT pg_catalog.setval('public.transaction_id_seq', 1, false);
+
+
+--
+-- PostgreSQL database dump complete
+--
+
+‹€_gÿbackup          
