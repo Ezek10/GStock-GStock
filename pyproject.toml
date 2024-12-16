@@ -1,0 +1,34 @@
+[tool.ruff]
+# Seleccionar reglas para aplicar (E: errores, F: fallos, W: advertencias, C: convenciones de estilo)
+lint.select = ["ALL"]
+
+# Ignorar reglas específicas (por ejemplo, longitud de línea)
+lint.ignore = ["D", "ISC001", "COM812", "S113", "B008", "ANN"]
+
+# Excluir archivos o directorios específicos del análisis
+exclude = [
+    "docs",
+    "venv",
+    ".venv",
+    ".git",
+    "envs",
+    ".vscode",
+    ".idea",
+    "__pycache__",
+    ".python-version",
+    "task_definition",
+    ".github"
+]
+
+# Configurar la longitud máxima de línea
+line-length = 120
+
+# Corregir automáticamente los problemas cuando sea posible
+fix = true
+unsafe-fixes = true
+
+# Configuración de formato para las advertencias y errores
+# format = "{path}:{line}:{column}: {code} {message}"
+
+# Número máximo de argumentos permitidos en una función
+# max-args = 3

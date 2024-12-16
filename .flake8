@@ -1,6 +1,0 @@
-[flake8]
-exclude = .git,__pycache__,env,.venv/,.vscode/,htmlcov/
-max-line-length = 160
-statistics = True
-show-source = True
-extend-ignore = E203, F821

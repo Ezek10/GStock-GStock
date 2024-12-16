@@ -1,13 +1,14 @@
-from typing import Optional
+from __future__ import annotations
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
 class Seller(BaseModel):
     model_config = ConfigDict(from_attributes=True, str_strip_whitespace=True, str_to_upper=True, use_enum_values=True)
-    
-    id: Optional[int] = None
+
+    id: int | None = None
     name: str = Field(min_length=1)
-    email: Optional[str] = None
-    cellphone: Optional[int] = None
-    address: Optional[str] = None
-    document: Optional[str] = None
+    email: str | None = None
+    cellphone: int | None = None
+    address: str | None = None
+    document: str | None = None

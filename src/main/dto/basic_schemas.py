@@ -1,4 +1,6 @@
-from typing import Generic, Optional, TypeVar
+from __future__ import annotations
+
+from typing import Generic, TypeVar
 
 from pydantic import BaseModel
 
@@ -10,7 +12,7 @@ class ResponseSchema(BaseModel, Generic[T]):
     """basic response for any request"""
 
     detail: str
-    result: Optional[T] = None
+    result: T | None = None
 
 
 class PageResponse(BaseModel, Generic[Y]):
@@ -22,7 +24,7 @@ class PageResponse(BaseModel, Generic[Y]):
     total_record: int
     content: list[Y]
 
-    def __eq__(self, __value: object) -> bool:
-        if type(__value) is not PageResponse:
-            raise TypeError()
-        return self.model_dump() == __value.model_dump()
+    def __eq__(self, value: object) -> bool:
+        if type(value) is not PageResponse:
+            raise TypeError
+        return self.model_dump() == value.model_dump()

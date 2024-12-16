@@ -2,8 +2,8 @@ from fastapi import Depends, Request
 from fastapi.routing import APIRouter
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.main.dto.stock_dto import ResponseStock, UpdateStock
 from src.main.dto.basic_schemas import PageResponse, ResponseSchema
+from src.main.dto.stock_dto import ResponseStock, UpdateStock
 from src.main.repository.config import get_db_session
 from src.main.services.stock_service import StockService
 

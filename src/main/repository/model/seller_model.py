@@ -1,4 +1,5 @@
 import time
+
 from sqlalchemy import BigInteger, Column, Integer, String
 
 from src.main.repository.config import Base
@@ -18,5 +19,5 @@ class SellerDB(Base):
     created_at = Column(BigInteger, default=time.time)
     modified_at = Column(BigInteger, onupdate=time.time)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"SellerDB({self.id})"
