@@ -23,7 +23,7 @@ class ProductService:
     async def update_product(self, update_from: UpdateProduct) -> None:
         product_exist = await ProductRepository.exist(self.session, update_from.id, self.customer)
         if not product_exist:
-            raise ItemNotAvailableError
+            raise ItemNotAvailableError()
         values_to_update = {
             **update_from.model_dump(include=set(ProductDB.__table__.columns.keys())),
             "customer": self.customer,

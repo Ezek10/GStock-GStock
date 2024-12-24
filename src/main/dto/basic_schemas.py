@@ -26,5 +26,5 @@ class PageResponse(BaseModel, Generic[Y]):
 
     def __eq__(self, value: object) -> bool:
         if type(value) is not PageResponse:
-            raise TypeError
+            raise TypeError()
         return self.model_dump() == value.model_dump()

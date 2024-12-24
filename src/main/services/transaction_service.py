@@ -94,7 +94,7 @@ class TransactionService:
             for prd in create_from.products
         ]
         if not await StockRepository.check_sell_transaction_ids(self.session, products):
-            raise ItemNotAvailableError
+            raise ItemNotAvailableError()
         await StockRepository.update_many(self.session, products)
 
         if create_from.has_swap:
@@ -114,7 +114,7 @@ class TransactionService:
     async def update_buy_transaction(self, update_from: UpdateBuyTransaction) -> None:
         transaction_exist = await TransactionRepository.exist(self.session, update_from.id, self.customer)
         if not transaction_exist:
-            raise ItemNotAvailableError
+            raise ItemNotAvailableError()
         supplier = SupplierDB(
             **update_from.supplier.model_dump(include=set(SupplierDB.__table__.columns.keys())), customer=self.customer
         )
@@ -141,7 +141,7 @@ class TransactionService:
     async def update_sell_transaction(self, update_from: UpdateSellTransaction) -> None:
         transaction_exist = await TransactionRepository.exist(self.session, update_from.id, self.customer)
         if not transaction_exist:
-            raise ItemNotAvailableError
+            raise ItemNotAvailableError()
         client = ClientDB(
             **update_from.client.model_dump(include=set(ClientDB.__table__.columns.keys())), customer=self.customer
         )
@@ -174,7 +174,7 @@ class TransactionService:
             for prd in update_from.products
         ]
         if not await StockRepository.check_sell_transaction_ids(self.session, products):
-            raise ItemNotAvailableError
+            raise ItemNotAvailableError()
         await StockRepository.update_many(self.session, products)
         if update_from.has_swap:
             for swap_item in update_from.swap_products:

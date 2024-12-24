@@ -19,7 +19,7 @@ class StockService:
     async def update_stock(self, update_from: UpdateStock) -> None:
         stock_exist = await StockRepository.exist(self.session, update_from.id, self.customer)
         if not stock_exist:
-            raise ItemNotAvailableError
+            raise ItemNotAvailableError()
         values_to_update = {
             **update_from.model_dump(include=set(StockDB.__table__.columns.keys())),
             "customer": self.customer,

@@ -52,9 +52,9 @@ async def commit_rollback(session: AsyncSession) -> None:
     """
     try:
         await session.commit()
-    except IntegrityError as ex:
+    except IntegrityError:
         await session.rollback()
-        raise AlreadyExistError from ex
+        raise AlreadyExistError()
     except Exception:
         await session.rollback()
         raise
