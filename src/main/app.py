@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
-from sh import pg_dump
+import subprocess
 
 from src.main.authorization.admin import get_user_with_token
 from src.main.controller.client_controller import router as client_router
@@ -25,22 +25,17 @@ from src.main.repository.config import connection
 # The task to run
 def backup_database():
     os.environ["PGPASSWORD"] = os.environ["DB_PASSWORD"]
+    command = [ 
+        "pg_dump",
+        "-h", os.environ["DB_HOST"],
+        "-p", os.environ["DB_PORT"],
+        "-U", os.environ["DB_USERNAME"],
+        os.environ["DB_GSTOCK"],
+        "--clean", "--column-inserts", "--if-exists"
+    ]
     with gzip.open("backup.gz", "wb") as f:
-        pg_dump(
-            "-h",
-            os.environ["DB_HOST"],
-            "-p",
-            os.environ["DB_PORT"],
-            "-U",
-            os.environ["DB_USERNAME"],
-            os.environ["DB_GSTOCK"],
-            "--clean",
-            "--column-inserts",
-            "--if-exists",
-            _out=f,
-        )
+        subprocess.run(command, stdout=f, check=True, env={"PGPASSWORD": os.environ["DB_PASSWORD"]})
 
-    # Credenciales del servicio de cuenta
     credentials = service_account.Credentials.from_service_account_file("secret.json")
 
     # Servicio de Google Drive
@@ -53,9 +48,6 @@ def backup_database():
     }
     media = MediaFileUpload("backup.sql", mimetype="application/sql")
     drive_service.files().create(body=file_metadata, media_body=media, fields="id").execute()
-
-    # ... additional task code goes here ...
-
 
 # Set up the scheduler
 scheduler = BackgroundScheduler()

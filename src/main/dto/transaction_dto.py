@@ -2,16 +2,14 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
-from typing import TYPE_CHECKING, Literal
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from src.main.dto.client_dto import Client
+from src.main.dto.seller_dto import Seller
 from src.main.dto.stock_dto import ResponseStock, StockStates
-
-if TYPE_CHECKING:
-    from src.main.dto.client_dto import Client
-    from src.main.dto.seller_dto import Seller
-    from src.main.dto.supplier_dto import Supplier
+from src.main.dto.supplier_dto import Supplier
 
 
 class TransactionTypes(str, Enum):
@@ -58,7 +56,7 @@ class BuyTransaction(BaseModel):
     supplier: Supplier
 
     @field_validator("date", mode="after")
-    def timestamp_to_int(self, v: datetime):
+    def timestamp_to_int(cls, v: datetime):
         return int(v.timestamp()) if isinstance(v, datetime) else v
 
 
@@ -81,7 +79,7 @@ class SellTransaction(BaseModel):
     swap_products: list[BuyProducts] | None = None
 
     @field_validator("date", mode="after")
-    def timestamp_to_int(self, v: datetime):
+    def timestamp_to_int(cls, v: datetime):
         return int(v.timestamp()) if isinstance(v, datetime) else v
 
 

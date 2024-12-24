@@ -6,7 +6,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 def random_color_generator():
-    color = secrets.randbelow(0, 2**24)
+    color = secrets.randbelow(2**24)
     hex_color = hex(color)
     return "#" + hex_color[2:]
 

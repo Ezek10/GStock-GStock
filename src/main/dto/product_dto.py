@@ -1,11 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from pydantic import BaseModel, ConfigDict, Field
 
-if TYPE_CHECKING:
-    from src.main.dto.supplier_dto import Supplier
+from src.main.dto.supplier_dto import Supplier
 
 
 class Product(BaseModel):

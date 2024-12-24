@@ -1,13 +1,11 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, ConfigDict, Field
 
-if TYPE_CHECKING:
-    from src.main.dto.product_dto import Product
-    from src.main.dto.supplier_dto import Supplier
+from src.main.dto.product_dto import Product
+from src.main.dto.supplier_dto import Supplier
 
 
 class StockStates(str, Enum):
