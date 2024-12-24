@@ -74,7 +74,7 @@ async def shutdown() -> None:
 
 
 @asynccontextmanager
-async def lifespan():
+async def lifespan(app: FastAPI):  # noqa: ARG001
     await start_up()
     yield
     await shutdown()

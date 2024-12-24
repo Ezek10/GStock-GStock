@@ -16,3 +16,4 @@ pytest-cov==5.0.0
 requests==2.32.3
 apscheduler==3.11.0
 sh==2.1.0
+google-api-python-client==2.156.0
