@@ -1,5 +1,6 @@
 import gzip
 import os
+import subprocess
 from contextlib import asynccontextmanager
 
 from apscheduler.schedulers.background import BackgroundScheduler  # runs tasks in the background
@@ -9,7 +10,6 @@ from fastapi.responses import JSONResponse
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
-import subprocess
 
 from src.main.authorization.admin import get_user_with_token
 from src.main.controller.client_controller import router as client_router
@@ -84,7 +84,7 @@ app.include_router(seller_router)
 
 
 @app.options("/{rest_of_path:path}")
-async def preflight_handler() -> Response:
+async def preflight_handler(request: Request, rest_of_path: str) -> Response:
     response = Response()
     response.headers["Access-Control-Allow-Origin"] = "*"
     response.headers["Access-Control-Allow-Methods"] = "DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT"
@@ -120,7 +120,7 @@ async def oauth2_authorization(request: Request, call_next):
 
 
 @app.exception_handler(Exception)
-def exception_handler(exception: Exception) -> JSONResponse:
+def exception_handler(request: Request, exception: Exception) -> JSONResponse:
     """Exception Handler for all the app"""
     return process_exception(exception)
 
