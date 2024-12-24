@@ -13,13 +13,13 @@ class ProductRepository:
             product.id = None
             session.add(product)
             await session.flush()
-        elif product_db.is_active is False:
+        elif product_db.is_active == False:
             product_db.is_active = True
         return product_db or product
 
     @staticmethod
     async def get_all(session: AsyncSession, customer: str, offset: int, limit: int) -> list[ProductDB]:
-        query = select(ProductDB).where(ProductDB.customer == customer, ProductDB.is_active is True)
+        query = select(ProductDB).where(ProductDB.customer == customer, ProductDB.is_active == True)
         query = query.order_by(ProductDB.name)
         query = query.offset(offset).limit(limit)
         result = (await session.scalars(query)).fetchall()
@@ -28,7 +28,7 @@ class ProductRepository:
     @staticmethod
     async def get(session: AsyncSession, product_id: int, customer: str) -> ProductDB:
         query = select(ProductDB).where(
-            ProductDB.customer == customer, ProductDB.id == product_id, ProductDB.is_active is True
+            ProductDB.customer == customer, ProductDB.id == product_id, ProductDB.is_active == True
         )
         return (await session.scalars(query)).one_or_none()
 
@@ -44,7 +44,7 @@ class ProductRepository:
 
     @staticmethod
     async def get_all_count(session: AsyncSession, customer: str) -> int:
-        query = select(ProductDB).where(ProductDB.customer == customer, ProductDB.is_active is True)
+        query = select(ProductDB).where(ProductDB.customer == customer, ProductDB.is_active == True)
         count_query = select(func.count(1)).select_from(query)
         return await session.scalar(count_query)
 
