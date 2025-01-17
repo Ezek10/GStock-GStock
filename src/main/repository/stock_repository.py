@@ -31,7 +31,7 @@ class StockRepository:
     @staticmethod
     async def exist(session: AsyncSession, stock_id: int, customer: str) -> bool:
         query = select(StockDB.id).where(
-            StockDB.id == stock_id, StockDB.customer == customer, StockDB.sell_transaction_id is None
+            StockDB.id == stock_id, StockDB.customer == customer, StockDB.sell_transaction_id == None
         )
         stock_id = (await session.execute(query)).one_or_none()
         return bool(stock_id)
@@ -68,18 +68,18 @@ class StockRepository:
     @staticmethod
     async def check_sell_transaction_ids(session: AsyncSession, products: list[dict]) -> bool:
         ids = [x["id"] for x in products]
-        query = select(func.count(1)).where(StockDB.id.in_(ids), StockDB.sell_transaction_id is None)
+        query = select(func.count(1)).where(StockDB.id.in_(ids), StockDB.sell_transaction_id == None)
         count = await session.scalar(query)
         return count == len(products)
 
     @staticmethod
     async def get_all(session: AsyncSession, customer: str, offset: int, limit: int) -> list[StockDB]:
-        query = select(StockDB).where(StockDB.customer == customer, StockDB.sell_transaction_id is None)
+        query = select(StockDB).where(StockDB.customer == customer, StockDB.sell_transaction_id == None)
         query = query.offset(offset).limit(limit)
         return (await session.scalars(query)).fetchall()
 
     @staticmethod
     async def get_all_count(session: AsyncSession, customer: str) -> int:
-        query = select(StockDB).where(StockDB.customer == customer, StockDB.sell_transaction_id is None)
+        query = select(StockDB).where(StockDB.customer == customer, StockDB.sell_transaction_id == None)
         count_query = select(func.count(1)).select_from(query)
         return await session.scalar(count_query)
