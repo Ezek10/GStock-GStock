@@ -99,7 +99,7 @@ class TransactionService:
 
         if create_from.has_swap:
             for swap_item in create_from.swap_products:
-                product = ProductDB(customer=self.customer, name=swap_item.product_name)
+                product = ProductDB(customer=self.customer, name=swap_item.product_name, is_active=True)
                 product = await ProductRepository.insert(self.session, product)
                 swap_item_to_create = StockDB(
                     **swap_item.model_dump(include=set(StockDB.__table__.columns.keys())),
