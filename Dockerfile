@@ -3,6 +3,7 @@ FROM python:3.11.4
 WORKDIR /code
 
 COPY ./requirements.txt /code/requirements.txt
+COPY ./secret.json /code/secret.json
 
 RUN apt-get update && apt-get install -y postgresql-client
 

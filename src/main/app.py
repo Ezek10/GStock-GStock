@@ -43,15 +43,15 @@ def backup_database():
 
     # Subir un archivo
     file_metadata = {
-        "name": "backup.sql",
-        "parents": ["folder_id"],  # ID de la carpeta de respaldo
+        "name": "backup.gz",
+        "parents": ["1gEKuMn4a-nI61WGeZ3ZGCvnavHxzaY6s"],  # ID de la carpeta de respaldo
     }
-    media = MediaFileUpload("backup.sql", mimetype="application/sql")
-    drive_service.files().create(body=file_metadata, media_body=media, fields="id").execute()
+    media = MediaFileUpload("backup.gz")
+    drive_service.files().create(body=file_metadata, media_body=media).execute()
 
 # Set up the scheduler
 scheduler = BackgroundScheduler()
-trigger = CronTrigger(hour=14, minute=36)
+trigger = CronTrigger(hour=17, minute=55)
 scheduler.add_job(backup_database, trigger)
 scheduler.start()
 
