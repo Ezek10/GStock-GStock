@@ -2,10 +2,11 @@ FROM python:3.11.4
 
 WORKDIR /code
 
-COPY ./requirements.txt /code/requirements.txt
+RUN apt-get update && apt-get install -y postgresql-client
+
 COPY ./secret.json /code/secret.json
 
-RUN apt-get update && apt-get install -y postgresql-client
+COPY ./requirements.txt /code/requirements.txt
 
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
