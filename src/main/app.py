@@ -33,7 +33,7 @@ def backup_database():
         os.environ["DB_GSTOCK"],
         "--clean", "--column-inserts", "--if-exists"
     ]
-    with gzip.open("backup.gz", "wb") as f:
+    with gzip.open("backup_gstock.gz", "wb") as f:
         subprocess.run(command, stdout=f, check=True, env={"PGPASSWORD": os.environ["DB_PASSWORD"]})
 
     credentials = service_account.Credentials.from_service_account_file("secret.json")
@@ -43,15 +43,15 @@ def backup_database():
 
     # Subir un archivo
     file_metadata = {
-        "name": "backup.gz",
+        "name": "backup_gstock.gz",
         "parents": ["1gEKuMn4a-nI61WGeZ3ZGCvnavHxzaY6s"],  # ID de la carpeta de respaldo
     }
-    media = MediaFileUpload("backup.gz")
+    media = MediaFileUpload("backup_gstock.gz")
     drive_service.files().create(body=file_metadata, media_body=media).execute()
 
 # Set up the scheduler
 scheduler = BackgroundScheduler()
-trigger = CronTrigger(hour=17, minute=55)
+trigger = CronTrigger(hour=21, minute=20)
 scheduler.add_job(backup_database, trigger)
 scheduler.start()
 
