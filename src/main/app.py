@@ -24,6 +24,7 @@ from src.main.repository.config import connection
 
 # The task to run
 def backup_database():
+    app_env = os.environ["APP_ENV"]
     os.environ["PGPASSWORD"] = os.environ["DB_PASSWORD"]
     command = [ 
         "pg_dump",
@@ -33,7 +34,7 @@ def backup_database():
         os.environ["DB_GSTOCK"],
         "--clean", "--column-inserts", "--if-exists"
     ]
-    with gzip.open("backup_gstock.gz", "wb") as f:
+    with gzip.open(f"backup_gstock_{app_env}.gz", "wb") as f:
         subprocess.run(command, stdout=f, check=True, env={"PGPASSWORD": os.environ["DB_PASSWORD"]})
 
     credentials = service_account.Credentials.from_service_account_file("secret.json")
@@ -43,10 +44,10 @@ def backup_database():
 
     # Subir un archivo
     file_metadata = {
-        "name": "backup_gstock.gz",
+        "name": f"backup_gstock_{app_env}.gz",
         "parents": ["1gEKuMn4a-nI61WGeZ3ZGCvnavHxzaY6s"],  # ID de la carpeta de respaldo
     }
-    media = MediaFileUpload("backup_gstock.gz")
+    media = MediaFileUpload(f"backup_gstock_{app_env}.gz")
     drive_service.files().create(body=file_metadata, media_body=media).execute()
 
 # Set up the scheduler
