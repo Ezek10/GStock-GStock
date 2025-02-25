@@ -2,6 +2,7 @@ import gzip
 import os
 import subprocess
 from contextlib import asynccontextmanager
+from datetime import datetime
 
 from apscheduler.schedulers.background import BackgroundScheduler  # runs tasks in the background
 from apscheduler.triggers.cron import CronTrigger  # allows us to specify a recurring time for execution
@@ -34,7 +35,8 @@ def backup_database():
         os.environ["DB_GSTOCK"],
         "--clean", "--column-inserts", "--if-exists"
     ]
-    with gzip.open(f"backup_gstock_{app_env}.gz", "wb") as f:
+    file_name = f"backup_gstock_{app_env}_{datetime.now().strftime("%Y-%m-%d")}.gz"
+    with gzip.open(file_name, "wb") as f:
         subprocess.run(command, stdout=f, check=True, env={"PGPASSWORD": os.environ["DB_PASSWORD"]})
 
     credentials = service_account.Credentials.from_service_account_file("secret.json")
@@ -44,10 +46,10 @@ def backup_database():
 
     # Subir un archivo
     file_metadata = {
-        "name": f"backup_gstock_{app_env}.gz",
+        "name": file_name,
         "parents": ["1gEKuMn4a-nI61WGeZ3ZGCvnavHxzaY6s"],  # ID de la carpeta de respaldo
     }
-    media = MediaFileUpload(f"backup_gstock_{app_env}.gz")
+    media = MediaFileUpload(file_name)
     drive_service.files().create(body=file_metadata, media_body=media).execute()
 
 # Set up the scheduler
