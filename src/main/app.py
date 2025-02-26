@@ -35,7 +35,7 @@ def backup_database():
         os.environ["DB_GSTOCK"],
         "--clean", "--column-inserts", "--if-exists"
     ]
-    file_name = f"backup_gstock_{app_env}_{datetime.now().strftime("%Y-%m-%d")}.gz"
+    file_name = f"backup_gstock_{app_env}_{datetime.now().strftime('%Y-%m-%d')}.gz"
     with gzip.open(file_name, "wb") as f:
         subprocess.run(command, stdout=f, check=True, env={"PGPASSWORD": os.environ["DB_PASSWORD"]})
 
